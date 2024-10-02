@@ -12,6 +12,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char keys[256] = {0};
 	char preKeys[256] = {0};
 
+	enum Scene {
+		START,
+		PLAY,
+		CLEAR,
+		END
+
+	}scene = PLAY;
+
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
 		// フレームの開始
@@ -25,6 +33,26 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 
+		switch (scene)
+		{
+		case START:
+			
+			//スペース押したらシーン切り替え
+			if (keys[DIK_SPACE] && preKeys[DIK_SPACE] == 0) {
+
+				scene = PLAY;
+			}
+
+			break;
+		case PLAY:
+
+			break;
+		case CLEAR:
+			break;
+		case END:
+			break;
+		}
+
 		///
 		/// ↑更新処理ここまで
 		///
@@ -32,6 +60,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓描画処理ここから
 		///
+		
+		switch (scene)
+		{
+		case START:
+			break;
+		case PLAY:
+			break;
+		case CLEAR:
+			break;
+		case END:
+			break;
+		}
+
+		Novice::ScreenPrintf(0, 0, "scene = %d", scene);
 
 		///
 		/// ↑描画処理ここまで
