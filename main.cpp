@@ -51,7 +51,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 
 		Novice::ScreenPrintf(0, 0, "scene = %d", scene);
-		Novice::ScreenPrintf(40, 40, "fuck");
+		Novice::ScreenPrintf(40, 40, "change");
 		
 		/// ↑描画処理ここまで
 		///
