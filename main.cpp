@@ -39,7 +39,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 				scene = PLAY;
 			}
-
+			int a;
 			break;
 		case PLAY:
 
