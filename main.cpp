@@ -29,9 +29,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		memcpy(preKeys, keys, 256);
 		Novice::GetHitKeyStateAll(keys);
 
-		///
-		/// ↓更新処理ここから
-		///
 
 		switch (scene)
 		{
@@ -46,26 +43,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			break;
 		case PLAY:
 
-			break;
-		case CLEAR:
-			break;
-		case END:
-			break;
-		}
-
-		///
-		/// ↑更新処理ここまで
-		///
-
-		///
-		/// ↓描画処理ここから
-		///
-		
-		switch (scene)
-		{
-		case START:
-			break;
-		case PLAY:
 			break;
 		case CLEAR:
 			break;
