@@ -1,6 +1,17 @@
 #include <Novice.h>
+#include <Vector2.h>
 
 const char kWindowTitle[] = "GC1A_03_クサマリョウト_タイトル";
+
+struct Player {
+	Vector2 pos;
+	float radius;
+};
+
+struct Cursor {
+	Vector2 pos;
+
+};
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -19,6 +30,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		END
 
 	}scene = PLAY;
+
+	// プレイヤー
+	Player player{
+		{0.0f},
+		15.0f
+	};
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -42,6 +59,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			break;
 		case PLAY:
+
+			#pragma region Player
+			
+			
+
+			#pragma endregion
+
 
 			break;
 		case CLEAR:
