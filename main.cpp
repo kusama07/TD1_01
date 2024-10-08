@@ -1,5 +1,7 @@
 #include <Novice.h>
 #include <Vector2.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 const char kWindowTitle[] = "GC1A_03_クサマリョウト_タイトル";
 
@@ -28,8 +30,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	}scene = PLAY;
 
 
-	int colorW = WHITE;
-	int enemyColor1 = WHITE;
+	int c1colorW = WHITE;
 	int c2colorW = WHITE;
 	int c3colorW = WHITE;
 
@@ -50,13 +51,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	enemy3.pos.y = 300;
 	enemy3.radius = 20;
 
-	float distance1;
-	float distance2;
-	float distance3;
-
-	
 	float theta = 0.0f;
-	float amplitude = 10.0f;
+	float amplitude = 5.0f;
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -77,16 +73,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 				scene = PLAY;
 			}
-			int a;
 			break;
 		case PLAY:
 
-#pragma region enemy
+		#pragma region enemy
 			///enemy
 			Novice::DrawEllipse(
 				(int)enemy1.pos.x, (int)enemy1.pos.y,
 				enemy1.radius, enemy1.radius, 0,
-				enemyColor1, solid);
+				c1colorW, solid);
 			Novice::DrawEllipse(
 				(int)enemy2.pos.x, (int)enemy2.pos.y,
 				enemy2.radius, enemy2.radius, 0,
@@ -95,8 +90,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				(int)enemy3.pos.x, (int)enemy3.pos.y,
 				enemy3.radius, enemy3.radius, 0,
 				c3colorW, solid);
-#pragma endregion
 
+			///moving
+			/// sin cos
+			theta += float(M_PI) / 90.0f;
+
+			///Left Right
+			enemy1.pos.x += cosf(theta) * amplitude;
+			///Up Down
+			enemy2.pos.y += cosf(theta) * amplitude;
+			/// Circle
+			/// Circle
+			enemy3.pos.x += cosf(theta) * amplitude;
+			enemy3.pos.y += sinf(theta) * amplitude;
+
+#pragma endregion
 
 			break;
 		case CLEAR:
