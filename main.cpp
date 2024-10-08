@@ -54,7 +54,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	float distance2;
 	float distance3;
 
-	///
+	
 	float theta = 0.0f;
 	float amplitude = 10.0f;
 
