@@ -173,7 +173,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             // プレイヤーの描画
             Novice::DrawEllipse(
                 (int)(player.pos.x - camera.pos.x), (int)(player.pos.y - camera.pos.y),
-            
                 (int)player.radius, (int)player.radius,
                 0.0f, WHITE, kFillModeSolid
             );
