@@ -89,7 +89,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
         case PLAY:
 
-#pragma region Player
+            #pragma region Player
 
             // スティックの入力を取得
             Novice::GetAnalogInputLeft(0, &leftStickX, &leftStickY);
@@ -179,6 +179,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
             Novice::ScreenPrintf(0, 20, "PlayerPosX : %.2f", player.pos.x);
 
+#pragma endregion
+
+#pragma region IsCollision
 #pragma endregion
 
             break;
