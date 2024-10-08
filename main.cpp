@@ -1,8 +1,7 @@
 #include <Novice.h>
 #include <Vector2.h>
-#include <cmath>
-#include <XInput.h>
-#include "Easing.h"
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 const char kWindowTitle[] = "GC1A_03_クサマリョウト_タイトル";
 
@@ -27,21 +26,54 @@ bool isCollision(Vector2 aPos, Vector2 bPos, float aRadius, float bRadius) {
     return distance < (aRadius + bRadius);
 }
 
+struct Enemy
+{
+	Vector2 pos;
+	int radius;
+};
+
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-    // ライブラリの初期化
-    Novice::Initialize(kWindowTitle, 1280, 720);
 
-    // キー入力結果を受け取る箱
-    char keys[256] = { 0 };
-    char preKeys[256] = { 0 };
+	// ライブラリの初期化
+	Novice::Initialize(kWindowTitle, 1280, 720);
 
-    enum Scene {
-        START,
-        PLAY,
-        CLEAR,
-        END
-    } scene = PLAY;
+	// キー入力結果を受け取る箱
+	char keys[256] = { 0 };
+	char preKeys[256] = { 0 };
+
+	enum Scene {
+		START,
+		PLAY,
+		CLEAR,
+		END
+
+	}scene = PLAY;
+
+
+	int c1colorW = WHITE;
+	int c2colorW = WHITE;
+	int c3colorW = WHITE;
+
+	FillMode solid = kFillModeSolid;
+
+	Enemy enemy1;
+	enemy1.pos.x = 100;
+	enemy1.pos.y = 300;
+	enemy1.radius = 20;
+
+	Enemy enemy2;
+	enemy2.pos.x = 400;
+	enemy2.pos.y = 300;
+	enemy2.radius = 20;
+
+	Enemy enemy3;
+	enemy3.pos.x = 700;
+	enemy3.pos.y = 300;
+	enemy3.radius = 20;
+
+	float theta = 0.0f;
+	float amplitude = 5.0f;
 
     Player player{
         {120.0f, 360.0f},  
@@ -67,29 +99,60 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
     // XPAD用
     XINPUT_STATE state;
+  
+	// ウィンドウの×ボタンが押されるまでループ
+	while (Novice::ProcessMessage() == 0) {
+		// フレームの開始
+		Novice::BeginFrame();
 
-    // ウィンドウの×ボタンが押されるまでループ
-    while (Novice::ProcessMessage() == 0) {
-        // フレームの開始
-        Novice::BeginFrame();
+		// キー入力を受け取る
+		memcpy(preKeys, keys, 256);
+		Novice::GetHitKeyStateAll(keys);
+    XInputGetState(0, &state);
 
-        // キー入力を受け取る
-        memcpy(preKeys, keys, 256);
-        Novice::GetHitKeyStateAll(keys);
-        XInputGetState(0, &state);
+		switch (scene)
+		{
+		case START:
 
-        switch (scene) {
-        case START:
-            // スペース押したらシーン切り替え
-            if (keys[DIK_SPACE] && preKeys[DIK_SPACE] == 0) {
-                scene = PLAY;
-            }
-            break;
+			//スペース押したらシーン切り替え
+			if (keys[DIK_SPACE] && preKeys[DIK_SPACE] == 0) {
 
+				scene = PLAY;
+			}
+			break;
+		case PLAY:
 
-        case PLAY:
+		#pragma region enemy
+			///enemy
+			Novice::DrawEllipse(
+				(int)enemy1.pos.x, (int)enemy1.pos.y,
+				enemy1.radius, enemy1.radius, 0,
+				c1colorW, solid);
+			Novice::DrawEllipse(
+				(int)enemy2.pos.x, (int)enemy2.pos.y,
+				enemy2.radius, enemy2.radius, 0,
+				c2colorW, solid);
+			Novice::DrawEllipse(
+				(int)enemy3.pos.x, (int)enemy3.pos.y,
+				enemy3.radius, enemy3.radius, 0,
+				c3colorW, solid);
 
-            #pragma region Player
+			///moving
+			/// sin cos
+			theta += float(M_PI) / 90.0f;
+
+			///Left Right
+			enemy1.pos.x += cosf(theta) * amplitude;
+			///Up Down
+			enemy2.pos.y += cosf(theta) * amplitude;
+			/// Circle
+			/// Circle
+			enemy3.pos.x += cosf(theta) * amplitude;
+			enemy3.pos.y += sinf(theta) * amplitude;
+
+#pragma endregion
+
+         #pragma region Player
 
             // スティックの入力を取得
             Novice::GetAnalogInputLeft(0, &leftStickX, &leftStickY);
@@ -184,26 +247,30 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma region IsCollision
 #pragma endregion
 
-            break;
+			break;
+		case CLEAR:
+			break;
+		case END:
+			break;
+		}
 
-        case CLEAR:
-            break;
-        case END:
-            break;
-        }
+		Novice::ScreenPrintf(0, 0, "scene = %d", scene);
+		Novice::ScreenPrintf(40, 40, "change");
 
-        Novice::ScreenPrintf(0, 0, "scene = %d", scene);
 
-        // フレームの終了
-        Novice::EndFrame();
+		/// ↑描画処理ここまで
+		///
 
-        // ESCキーが押されたらループを抜ける
-        if (preKeys[DIK_ESCAPE] == 0 && keys[DIK_ESCAPE] != 0) {
-            break;
-        }
-    }
+		// フレームの終了
+		Novice::EndFrame();
 
-    // ライブラリの終了
-    Novice::Finalize();
-    return 0;
+		// ESCキーが押されたらループを抜ける
+		if (preKeys[DIK_ESCAPE] == 0 && keys[DIK_ESCAPE] != 0) {
+			break;
+		}
+	}
+
+	// ライブラリの終了
+	Novice::Finalize();
+	return 0;
 }
