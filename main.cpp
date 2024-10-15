@@ -65,6 +65,35 @@ bool isCollision(Vector2 aPos, Vector2 bPos, float aRadius, float bRadius) {
     return distance < (aRadius + bRadius);
 }
 
+Vector2 circleEnemy(Vector2 pos, float amplitude, float theta) {
+    Vector2 result;
+
+    result.x = cosf(theta + (float)M_PI) * amplitude + pos.x;
+    result.y = sinf(theta + (float)M_PI) * amplitude + pos.y;
+
+    return result;
+}
+
+Vector2 verticalEnemy(Vector2 pos, float amplitude, float theta){
+    Vector2 result;
+
+    result.x = pos.x;
+    result.y = sinf(theta) * amplitude + pos.x;
+
+    return result;
+}
+
+Vector2 horizonEnemy(Vector2 pos,float amplitude, float theta) {
+    Vector2 result;
+
+    theta += float(M_PI) / 60.0f;
+
+    result.x = sinf(theta) * amplitude + pos.x;
+    result.y = pos.y;
+
+    return result;
+}
+
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
@@ -95,7 +124,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     Enemy enemies[maxEnemy];
     
     for (int i = 0; i < maxEnemy; i++) {
-        enemies[i].pos = { 400.0f, 360.0f };
+        enemies[i].pos = { 800.0f, 360.0f };
         enemies[i].enemyType = i % 3; 
         enemies[i].theta = 0.0f;
         enemies[i].amplitude = 150.0f;
@@ -134,11 +163,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     Particle particles[maxParticles];
 
     for (int i = 0; i < maxParticles; ++i) {
-        particles[i].pos = { player.pos.x, player.pos.y };    // プレイヤーの近くから始める
-        particles[i].velocity = { (rand() % 200 - 100) / 100.0f, 5.0f };  // ランダムなX方向速度
-        particles[i].radius = 5.0f;                          // 葉っぱのサイズ
-        particles[i].isActive = false;                         // 初期状態では非表示
-        particles[i].lifeTime = 0;                       // 時間の初期化
+        particles[i].pos = { player.pos.x, player.pos.y };    
+        particles[i].velocity = { (rand() % 200 - 100) / 100.0f, 5.0f };  
+        particles[i].radius = 5.0f;                         
+        particles[i].isActive = false;                    
+        particles[i].lifeTime = 0;                     
         particles[i].baseAngle = 0.0f;
         particles[i].randomAngle = 0.0f;
     }
@@ -250,7 +279,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     enemies[0].pos.x = sinf(enemies[i].theta) * enemies[i].amplitude + 175.0f;
                     enemies[0].pos.y = 0.0f; 
 
-                    enemies[1].pos.x = sinf(enemies[i].theta) * enemies[i].amplitude + 170.0f ;
+                    enemies[1].pos.x = sinf(enemies[i].theta) * enemies[i].amplitude + 170.0f;
                     enemies[1].pos.y = 720.0f;
 
                     enemies[2].pos.x = sinf(enemies[i].theta) * enemies[i].amplitude + 1280.0f;
@@ -265,6 +294,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     enemies[5].pos.x = sinf(enemies[i].theta) * (enemies[i].amplitude * 2) + 1130.0f;
                     enemies[5].pos.y = 520.0f;
 
+                    enemies[10].pos = horizonEnemy({ 150.0f,300.0f }, 150.0f, enemies[i].theta);
                 }
             }
 
@@ -490,7 +520,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                 if (isCollision(player.pos, enemies[i].pos, player.radius, enemies[i].radius)) {
 
                     player.isAlive = false;
-                    randMax = 21;
+                    //randMax = 21;
                 }
             }
 
