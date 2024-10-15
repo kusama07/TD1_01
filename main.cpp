@@ -47,6 +47,8 @@ struct Enemy {
 
 struct Cursor {
     Vector2 pos;
+    int th;
+    int midCursorTh;
 };
 
 struct Camera {
@@ -65,28 +67,34 @@ bool isCollision(Vector2 aPos, Vector2 bPos, float aRadius, float bRadius) {
     return distance < (aRadius + bRadius);
 }
 
-Vector2 circleEnemy(Vector2 pos, float amplitude, float theta) {
+Vector2 circleEnemy(Vector2 pos, float amplitude, float& theta, float velocity) {
     Vector2 result;
 
-    result.x = cosf(theta + (float)M_PI) * amplitude + pos.x;
-    result.y = sinf(theta + (float)M_PI) * amplitude + pos.y;
+    theta += float(M_PI) / velocity;
+
+    result.x = cosf(3 * theta + (float)M_PI) * amplitude + pos.x;
+    result.y = sinf(3 * theta + (float)M_PI) * amplitude + pos.y;
 
     return result;
 }
 
-Vector2 verticalEnemy(Vector2 pos, float amplitude, float theta){
+Vector2 verticalEnemy(Vector2 pos, float amplitude, float& theta, float velocity){
     Vector2 result;
+
+    theta += float(M_PI) / velocity;
 
     result.x = pos.x;
-    result.y = sinf(theta) * amplitude + pos.x;
+    result.y = sinf(theta) * amplitude + pos.y;
 
     return result;
 }
 
-Vector2 horizonEnemy(Vector2 pos,float amplitude, float theta) {
+Vector2 horizonEnemy(Vector2 pos,float amplitude, float velocity) {
     Vector2 result;
 
-    theta += float(M_PI) / 60.0f;
+    float theta = 0.0f;
+
+    theta += float(M_PI) / velocity;
 
     result.x = sinf(theta) * amplitude + pos.x;
     result.y = pos.y;
@@ -119,7 +127,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region 敵
 
-    const int maxEnemy = 100;
+    const int maxEnemy = 11;
 
     Enemy enemies[maxEnemy];
     
@@ -190,7 +198,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
     // カーソルの初期設定
     Cursor cursor{
-        {640.0f, 360.0f}
+        {640.0f, 360.0f},
+        Novice::LoadTexture("./Resources/PlayScene/cursor.png"),
+        Novice::LoadTexture("./Resources/PlayScene/cursorMidpoint.png"),
     };
 
 #pragma endregion
@@ -208,7 +218,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
     int leftStickX = 0;
     int leftStickY = 0;
-    const float easingSpeed = 0.2f;
+    const float easingSpeed = 0.1f;
 
     // XPAD用
     XINPUT_STATE state;
@@ -258,11 +268,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma region 敵
 
             for (int i = 0; i < maxEnemy; i++) {
-                enemies[i].theta += float(M_PI) / 60.0f;
+               
                 if (enemies[i].enemyType == 0) {
                     // 円状に動く敵
-                    enemies[8].pos.x = cosf(enemies[i].theta + (i * 2 * (float)M_PI)) * enemies[i].amplitude + 150.0f; 
-                    enemies[8].pos.y = sinf(enemies[i].theta + (i * 2 * (float)M_PI)) * enemies[i].amplitude + 360.0f;
+                    enemies[8].pos = circleEnemy({ 640.0f,360.0f }, 200.0f, enemies[i].theta, 300.0f);
 
                     enemies[9].pos.x = cosf(enemies[i].theta + (i * 2 * (float)M_PI)) * enemies[i].amplitude + 300.0f;
                     enemies[9].pos.y = sinf(enemies[i].theta + (i * 2 * (float)M_PI)) * enemies[i].amplitude + 0.0f;
@@ -294,7 +303,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     enemies[5].pos.x = sinf(enemies[i].theta) * (enemies[i].amplitude * 2) + 1130.0f;
                     enemies[5].pos.y = 520.0f;
 
-                    enemies[10].pos = horizonEnemy({ 150.0f,300.0f }, 150.0f, enemies[i].theta);
+                    enemies[10].pos = horizonEnemy({ 150.0f,300.0f }, 150.0f,  60.0f);
                 }
             }
 
@@ -319,35 +328,37 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                 cursor.pos.y = player.pos.y + direction.y * dashDistance;
 
                 // ダッシュ
-                if (Novice::IsTriggerButton(0, kPadButton10)) {
+                if (player.isAlive) {
+                    if (Novice::IsTriggerButton(0, kPadButton10)) {
 
-                    // 目標位置を更新
-                    player.targetPos.x = cursor.pos.x;
-                    player.targetPos.y = cursor.pos.y;
+                        // 目標位置を更新
+                        player.targetPos.x = cursor.pos.x;
+                        player.targetPos.y = cursor.pos.y;
 
-                    // アニメーション更新
-                    player.isAnimation = true;
-                    player.animeCount = 30;
+                        // アニメーション更新
+                        player.isAnimation = true;
+                        player.animeCount = 30;
 
-                    // ダッシュ時にパーティクルを生成
-                    for (int j = 0; j < particlesToGenerate; ++j) {
-                        for (int i = 0; i < maxParticles; ++i) {
-                            if (!particles[i].isActive) {
-                                particles[i].pos = player.pos;
+                        // ダッシュ時にパーティクルを生成
+                        for (int j = 0; j < particlesToGenerate; ++j) {
+                            for (int i = 0; i < maxParticles; ++i) {
+                                if (!particles[i].isActive) {
+                                    particles[i].pos = player.pos;
 
-                                particles[i].baseAngle = atan2f(player.targetPos.y - player.pos.y, player.targetPos.x - player.pos.x) + ((float)M_PI); 
+                                    particles[i].baseAngle = atan2f(player.targetPos.y - player.pos.y, player.targetPos.x - player.pos.x) + ((float)M_PI);
 
-                                particles[i].randomAngle = particles[i].baseAngle + ((rand() % 30 - 15) * (float)M_PI / 180.0f); 
+                                    particles[i].randomAngle = particles[i].baseAngle + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
 
-                                particles[i].speed = 5.0f + (rand() % 5); 
+                                    particles[i].speed = 5.0f + (rand() % 5);
 
-                                particles[i].velocity = { cosf(particles[i].randomAngle) * particles[i].speed, sinf(particles[i].randomAngle) * particles[i].speed };
+                                    particles[i].velocity = { cosf(particles[i].randomAngle) * particles[i].speed, sinf(particles[i].randomAngle) * particles[i].speed };
 
-                                particles[i].radius = 5.0f;
-                                particles[i].lifeTime = 60; 
-                                particles[i].isActive = true;
+                                    particles[i].radius = 5.0f;
+                                    particles[i].lifeTime = 60;
+                                    particles[i].isActive = true;
 
-                                break;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -362,19 +373,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
             if (keys[DIK_W]) {
 
-                player.pos.y -= 10.0f;
+                player.targetPos.y -= 10.0f;
             }
             if (keys[DIK_S]) {
 
-                player.pos.y += 10.0f;
+                player.targetPos.y += 10.0f;
             }
             if (keys[DIK_A]) {
 
-                player.pos.x -= 10.0f;
+                player.targetPos.x -= 10.0f;
             }
             if (keys[DIK_D]) {
 
-                player.pos.x += 10.0f;
+                player.targetPos.x += 10.0f;
             }
 #pragma endregion
 
@@ -520,7 +531,29 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                 if (isCollision(player.pos, enemies[i].pos, player.radius, enemies[i].radius)) {
 
                     player.isAlive = false;
-                    //randMax = 21;
+
+                    // シェイク
+                    randMax = 20;
+
+                    for (int j = 0; j < particlesToGenerate; ++j) {
+                        for (int l = 0; l < maxParticles; ++l) {
+                            if (!particles[l].isActive) {
+                                particles[l].pos = player.pos;
+
+                                particles[l].randomAngle = (rand() % 10 - 1) + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
+
+                                particles[l].speed = 5.0f + (rand() % 5);
+
+                                particles[l].velocity = { cosf(particles[l].randomAngle) * particles[l].speed, sinf(particles[l].randomAngle) * particles[l].speed };
+
+                                particles[l].radius = 5.0f;
+                                particles[l].lifeTime = 60;
+                                particles[l].isActive = true;
+
+                                break;
+                            }
+                        }
+                    }
                 }
             }
 
@@ -542,26 +575,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
             //*************************カーソルの描画
             if (player.isAlive) {
-                Novice::DrawEllipse(
-                    (int)(cursor.pos.x - camera.pos.x), (int)(cursor.pos.y - camera.pos.y),
-                    10, 10,
-                    0.0f, RED, kFillModeSolid
+
+                Novice::DrawSprite(((int)cursor.pos.x - 10) - (int)camera.pos.x, ((int)cursor.pos.y - 10) - (int)camera.pos.y,
+                    cursor.th, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF
                 );
 
                 // プレイヤーとカーソルの間に小さな円を2つ描画
                 Vector2 midPoint1 = Lerp(player.pos, cursor.pos, 0.33f);
                 Vector2 midPoint2 = Lerp(player.pos, cursor.pos, 0.66f);
 
-                Novice::DrawEllipse(
-                    (int)(midPoint1.x - camera.pos.x), (int)(midPoint1.y - camera.pos.y),
-                    5, 5,
-                    0.0f, RED, kFillModeSolid
+
+                Novice::DrawSprite(((int)midPoint1.x - 5) - (int)camera.pos.x, ((int)midPoint1.y - 5) - (int)camera.pos.y,
+                    cursor.midCursorTh, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF
                 );
 
-                Novice::DrawEllipse(
-                    (int)(midPoint2.x - camera.pos.x), (int)(midPoint2.y - camera.pos.y),
-                    5, 5,
-                    0.0f, RED, kFillModeSolid
+                Novice::DrawSprite(((int)midPoint2.x - 5) - (int)camera.pos.x, ((int)midPoint2.y - 5) - (int)camera.pos.y,
+                    cursor.midCursorTh, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF
                 );
 
             }
@@ -600,8 +629,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     );
                 }
             }
-
-
             
             //************************デバッグ用
             Novice::ScreenPrintf(0, 20, "PlayerPosX : %.2f", player.pos.x);
