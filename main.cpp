@@ -58,6 +58,7 @@ struct Camera {
 
 struct CheckPoint {
     Vector2 pos;
+    int th;
 };
 
 bool isCollision(Vector2 aPos, Vector2 bPos, float aRadius, float bRadius) {
@@ -72,8 +73,8 @@ Vector2 circleEnemy(Vector2 pos, float amplitude, float& theta, float velocity) 
 
     theta += float(M_PI) / velocity;
 
-    result.x = cosf(3 * theta + (float)M_PI) * amplitude + pos.x;
-    result.y = sinf(3 * theta + (float)M_PI) * amplitude + pos.y;
+    result.x = cosf(theta + (float)M_PI) * amplitude + pos.x;
+    result.y = sinf(theta + (float)M_PI) * amplitude + pos.y;
 
     return result;
 }
@@ -181,6 +182,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     }
     const int particlesToGenerate = 5; // 生成するパーティクルの数
 
+    int particlesTh = Novice::LoadTexture("./Resources/PlayScene/leaf.png");
+
 #pragma endregion 
 
 #pragma region チェックポイント
@@ -188,6 +191,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     //*********チェックポイント
     CheckPoint checkPoint{
         checkPoint.pos = {720.0f / 2.0f,0.0f},
+        checkPoint.th = Novice::LoadTexture("./Resources/PlayScene/checkpoint.png"),
     };
 
     Vector2 clearLine = { 1350.0f , 0.0f };
@@ -272,6 +276,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                 if (enemies[i].enemyType == 0) {
                     // 円状に動く敵
                     enemies[8].pos = circleEnemy({ 640.0f,360.0f }, 200.0f, enemies[i].theta, 300.0f);
+
 
                     enemies[9].pos.x = cosf(enemies[i].theta + (i * 2 * (float)M_PI)) * enemies[i].amplitude + 300.0f;
                     enemies[9].pos.y = sinf(enemies[i].theta + (i * 2 * (float)M_PI)) * enemies[i].amplitude + 0.0f;
@@ -565,6 +570,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             Novice::DrawBox(0 - (int)camera.pos.x, 0 - (int)camera.pos.y,
                 1280, 720, 0.0f, BLACK, kFillModeSolid);
 
+            //*********************チェックポイント
+            Novice::DrawSprite(((int)checkPoint.pos.x - 105) - (int)camera.pos.x, 0, checkPoint.th, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF);
+
             //**************************敵
             // 敵の描画
             for (int i = 0; i < maxEnemy; i++) {
@@ -595,9 +603,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
             }
 
-            //*********************チェックポイント
-            Novice::DrawLine((int)checkPoint.pos.x - (int)camera.pos.x, 0, (int)checkPoint.pos.x - (int)camera.pos.x, 720, RED);
-
             //**********************ゴール
             Novice::DrawLine((int)clearLine.x - (int)camera.pos.x, 0, (int)clearLine.x - (int)camera.pos.x, 720, WHITE);
 
@@ -622,11 +627,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
             for (int i = 0; i < maxParticles; ++i) {
                 if (particles[i].isActive) {
-                    Novice::DrawEllipse(
-                        (int)particles[i].pos.x - (int)camera.pos.x, (int)particles[i].pos.y - (int)camera.pos.y,
-                        (int)particles[i].radius, (int)particles[i].radius,
-                        0.0f, WHITE, kFillModeSolid
-                    );
+                   
+
+                    Novice::DrawSprite((int)particles[i].pos.x - (int)particles[i].radius - (int)camera.pos.x, (int)particles[i].pos.y - (int)particles[i].radius - (int)camera.pos.y, particlesTh, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF);
                 }
             }
             
