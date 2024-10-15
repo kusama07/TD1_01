@@ -7,634 +7,642 @@
 #include <cmath>
 #include "Blend.h"
 
-const char kWindowTitle[] = "5103_‚±‚Ìƒnƒi‚Ìˆê}‚Ì“à‚É‚Ís‚«‚é‚±‚Æ‚Ì‚È‚¢Œ¾—t‚ª‚±‚à‚Á‚Ä‚¢‚é‚©‚çA¶”¼‰Â‚È‹C‚¿‚Æv‚í‚È‚¢‚ÅB";
+const char kWindowTitle[] = "5103_ã“ã®ãƒãƒŠã®ä¸€æã®å†…ã«ã¯å°½ãã‚‹ã“ã¨ã®ãªã„è¨€è‘‰ãŒã“ã‚‚ã£ã¦ã„ã‚‹ã‹ã‚‰ã€ç”ŸåŠå¯ãªæ°—æŒã¡ã¨æ€ã‚ãªã„ã§ã€‚";
 
 struct Player {
-    Vector2 pos;
-    Vector2 targetPos;  
-    float radius;
-    Vector2 checkPointPos;
-    bool isAlive;
-    int respawCoolTime;
-    int transparency;
-    bool isBlinking;
-    int blinkingTime;
-    int th;
-    int screenPosX;
-    bool isAnimation;
-    int animeCount;
+	Vector2 pos;
+	Vector2 targetPos;
+	float radius;
+	Vector2 checkPointPos;
+	bool isAlive;
+	int respawCoolTime;
+	int transparency;
+	bool isBlinking;
+	int blinkingTime;
+	int th;
+	int screenPosX;
+	bool isAnimation;
+	int animeCount;
 };
 
 struct Particle {
-    Vector2 pos;      
-    Vector2 velocity;
-    float radius;     
-    int lifeTime; 
-    bool isActive;  
-    float baseAngle;
-    float randomAngle;
-    float speed;
+	Vector2 pos;
+	Vector2 velocity;
+	float radius;
+	int lifeTime;
+	bool isActive;
+	float baseAngle;
+	float randomAngle;
+	float speed;
 };
 
-// “G‚Ì\‘¢‘Ì
+// æ•µã®æ§‹é€ ä½“
 struct Enemy {
-    Vector2 pos;  
-    int enemyType; // “G‚Ìí—Ş (0: ‰~, 1: c•ûŒü, 2: ‰¡•ûŒü)
-    float theta;     
-    float amplitude;
-    float radius;
+	Vector2 pos;
+	int enemyType; // æ•µã®ç¨®é¡ (0: å††, 1: ç¸¦æ–¹å‘, 2: æ¨ªæ–¹å‘)
+	float theta;
+	float amplitude;
+	float radius;
 };
 
 struct Cursor {
-    Vector2 pos;
+	Vector2 pos;
 };
 
 struct Camera {
-    Vector2 pos; 
-    Vector2 targetPos;
+	Vector2 pos;
+	Vector2 targetPos;
 };
 
 struct CheckPoint {
-    Vector2 pos;
+	Vector2 pos;
 };
 
 bool isCollision(Vector2 aPos, Vector2 bPos, float aRadius, float bRadius) {
-    float dx = aPos.x - bPos.x;
-    float dy = aPos.y - bPos.y;
-    float distance = sqrtf(dx * dx + dy * dy);
-    return distance < (aRadius + bRadius);
+	float dx = aPos.x - bPos.x;
+	float dy = aPos.y - bPos.y;
+	float distance = sqrtf(dx * dx + dy * dy);
+	return distance < (aRadius + bRadius);
 }
 
-Vector2 circleEnemy(Vector2 pos, float amplitude, float theta) {
-    Vector2 result;
+Vector2 circleEnemy(Vector2 pos, float amplitude, float &theta, float velocity) {
+	Vector2 result;
 
-    result.x = cosf(theta + (float)M_PI) * amplitude + pos.x;
-    result.y = sinf(theta + (float)M_PI) * amplitude + pos.y;
+	theta += float(M_PI) / velocity; ///
 
-    return result;
+	result.x = cosf(5 * theta + (float)M_PI) * amplitude + pos.x;
+	result.y = sinf(5 * theta + (float)M_PI) * amplitude + pos.y;
+
+	return result;
 }
 
-Vector2 verticalEnemy(Vector2 pos, float amplitude, float theta){
-    Vector2 result;
+Vector2 verticalEnemy(Vector2 pos, float amplitude, float &theta, float velocity) {
+	Vector2 result;
 
-    result.x = pos.x;
-    result.y = sinf(theta) * amplitude + pos.x;
+	theta += float(M_PI) / velocity; ///
 
-    return result;
+	result.x = pos.x;
+	result.y = sinf(theta) * amplitude + pos.y;
+
+	return result;
 }
 
-Vector2 horizonEnemy(Vector2 pos,float amplitude, float theta) {
-    Vector2 result;
+Vector2 horizonEnemy(Vector2 pos, float amplitude, float &theta, float velocity) {
+	Vector2 result;
 
-    theta += float(M_PI) / 60.0f;
+	theta += float(M_PI) / velocity; ///
 
-    result.x = sinf(theta) * amplitude + pos.x;
-    result.y = pos.y;
+	result.x = sinf(theta) * amplitude + pos.x;
+	result.y = pos.y;
 
-    return result;
+	return result;
 }
 
-// WindowsƒAƒvƒŠ‚Å‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒg(mainŠÖ”)
+// Windowsã‚¢ãƒ—ãƒªã§ã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆ(mainé–¢æ•°)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
-    // ƒ‰ƒCƒuƒ‰ƒŠ‚Ì‰Šú‰»
-    Novice::Initialize(kWindowTitle, 1280, 720);
+	// ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®åˆæœŸåŒ–
+	Novice::Initialize(kWindowTitle, 1280, 720);
 
-    // ƒL[“ü—ÍŒ‹‰Ê‚ğó‚¯æ‚é” 
-    char keys[256] = { 0 };
-    char preKeys[256] = { 0 };
+	// ã‚­ãƒ¼å…¥åŠ›çµæœã‚’å—ã‘å–ã‚‹ç®±
+	char keys[256] = { 0 };
+	char preKeys[256] = { 0 };
 
-//************************* éŒ¾ *************************//
+	//************************* å®£è¨€ *************************//
 
-#pragma region ƒV[ƒ“
-    enum Scene {
-        START,
-        PLAY,
-        CLEAR,
-        END
+#pragma region ã‚·ãƒ¼ãƒ³
+	enum Scene {
+		START,
+		PLAY,
+		CLEAR,
+		END
 
-    }scene = PLAY;
-
-#pragma endregion
-
-#pragma region “G
-
-    const int maxEnemy = 100;
-
-    Enemy enemies[maxEnemy];
-    
-    for (int i = 0; i < maxEnemy; i++) {
-        enemies[i].pos = { 800.0f, 360.0f };
-        enemies[i].enemyType = i % 3; 
-        enemies[i].theta = 0.0f;
-        enemies[i].amplitude = 150.0f;
-        enemies[i].radius = 25.0f;
-    }
+	}scene = PLAY;
 
 #pragma endregion
 
-#pragma region ƒvƒŒƒCƒ„[
+#pragma region æ•µ
 
-    Player player{
-        player.pos = {150.0f, 360.0f},
-        player.targetPos = {150.0f, 360.0f},
-        player.radius = 30.0f,
-        player.checkPointPos = {150.0f, 360.0f},
-        player.isAlive = true,
-        player.respawCoolTime = 60,
-        player.transparency = 255,
-        player.isBlinking = false,
-        player.blinkingTime = 60,
-        player.th = Novice::LoadTexture("./Resources/PlayScene/player.png"),
-        player.screenPosX = 180,
-        player.isAnimation = false,
-        player.animeCount = 60,
-    };
+	const int maxEnemy = 100;
 
-    // ‚‘¬ˆÚ“®‘¬“x
-    const float dashDistance = 300.0f;
+	Enemy enemies[maxEnemy];
+
+	for (int i = 0; i < maxEnemy; i++) {
+		enemies[i].pos = { 800.0f, 360.0f };
+		enemies[i].enemyType = i % 3;
+		enemies[i].theta = 0.0f;
+		enemies[i].amplitude = 150.0f;
+		enemies[i].radius = 25.0f;
+	}
+
+	//int stage2x = 1280;
+
+#pragma endregion
+
+#pragma region ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
+
+	Player player{
+		player.pos = {150.0f, 360.0f},
+		player.targetPos = {150.0f, 360.0f},
+		player.radius = 30.0f,
+		player.checkPointPos = {150.0f, 360.0f},
+		player.isAlive = true,
+		player.respawCoolTime = 60,
+		player.transparency = 255,
+		player.isBlinking = false,
+		player.blinkingTime = 60,
+		player.th = Novice::LoadTexture("./Resources/PlayScene/player.png"),
+		player.screenPosX = 180,
+		player.isAnimation = false,
+		player.animeCount = 60,
+	};
+
+	// é«˜é€Ÿç§»å‹•é€Ÿåº¦
+	const float dashDistance = 300.0f;
 
 #pragma endregion 
 
-#pragma region ƒp[ƒeƒB‚­‚é
+#pragma region ãƒ‘ãƒ¼ãƒ†ã‚£ãã‚‹
 
-    // ƒp[ƒeƒBƒNƒ‹‚ÌÅ‘å”
-    const int maxParticles = 50;
-    Particle particles[maxParticles];
+	// ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã®æœ€å¤§æ•°
+	const int maxParticles = 50;
+	Particle particles[maxParticles];
 
-    for (int i = 0; i < maxParticles; ++i) {
-        particles[i].pos = { player.pos.x, player.pos.y };    
-        particles[i].velocity = { (rand() % 200 - 100) / 100.0f, 5.0f };  
-        particles[i].radius = 5.0f;                         
-        particles[i].isActive = false;                    
-        particles[i].lifeTime = 0;                     
-        particles[i].baseAngle = 0.0f;
-        particles[i].randomAngle = 0.0f;
-    }
-    const int particlesToGenerate = 5; // ¶¬‚·‚éƒp[ƒeƒBƒNƒ‹‚Ì”
-
-#pragma endregion 
-
-#pragma region ƒ`ƒFƒbƒNƒ|ƒCƒ“ƒg
-
-    //*********ƒ`ƒFƒbƒNƒ|ƒCƒ“ƒg
-    CheckPoint checkPoint{
-        checkPoint.pos = {720.0f / 2.0f,0.0f},
-    };
-
-    Vector2 clearLine = { 1350.0f , 0.0f };
+	for (int i = 0; i < maxParticles; ++i) {
+		particles[i].pos = { player.pos.x, player.pos.y };
+		particles[i].velocity = { (rand() % 200 - 100) / 100.0f, 5.0f };
+		particles[i].radius = 5.0f;
+		particles[i].isActive = false;
+		particles[i].lifeTime = 0;
+		particles[i].baseAngle = 0.0f;
+		particles[i].randomAngle = 0.0f;
+	}
+	const int particlesToGenerate = 5; // ç”Ÿæˆã™ã‚‹ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã®æ•°
 
 #pragma endregion
 
-#pragma region ƒJ[ƒ\ƒ‹
+#pragma region ãƒã‚§ãƒƒã‚¯ãƒã‚¤ãƒ³ãƒˆ
 
-    // ƒJ[ƒ\ƒ‹‚Ì‰Šúİ’è
-    Cursor cursor{
-        {640.0f, 360.0f}
-    };
+	//*********ãƒã‚§ãƒƒã‚¯ãƒã‚¤ãƒ³ãƒˆ
+	CheckPoint checkPoint{
+		checkPoint.pos = {720.0f / 2.0f,0.0f},
+	};
 
-#pragma endregion
-
-#pragma region ƒJƒƒ‰
-
-    Camera camera{
-        {0.0f, 0.0f},
-        {0.0f, 0.0f}
-    };
+	Vector2 clearLine = { 1350.0f , 0.0f };
 
 #pragma endregion
 
-#pragma region ƒRƒ“ƒgƒ[ƒ‰[
+#pragma region ã‚«ãƒ¼ã‚½ãƒ«
 
-    int leftStickX = 0;
-    int leftStickY = 0;
-    const float easingSpeed = 0.2f;
-
-    // XPAD—p
-    XINPUT_STATE state;
+	// ã‚«ãƒ¼ã‚½ãƒ«ã®åˆæœŸè¨­å®š
+	Cursor cursor{
+		{640.0f, 360.0f}
+	};
 
 #pragma endregion
 
-    //ƒVƒFƒCƒN
-    Vector2 wrand = { 0.0f };
-    int randMax = 0;
+#pragma region ã‚«ãƒ¡ãƒ©
 
-//*****************************************************//
-
-
-    // ƒEƒBƒ“ƒhƒE‚Ì~ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚é‚Ü‚Åƒ‹[ƒv
-    while (Novice::ProcessMessage() == 0) {
-        // ƒtƒŒ[ƒ€‚ÌŠJn
-        Novice::BeginFrame();
-
-        // ƒL[“ü—Í‚ğó‚¯æ‚é
-        memcpy(preKeys, keys, 256);
-        Novice::GetHitKeyStateAll(keys);
-        XInputGetState(0, &state);
-
-        switch (scene)
-        {
-        case START:
-
-            //ƒXƒy[ƒX‰Ÿ‚µ‚½‚çƒV[ƒ“Ø‚è‘Ö‚¦
-            if (keys[DIK_SPACE] && preKeys[DIK_SPACE] == 0) {
-
-                scene = PLAY;
-            }
-            break;
-        case PLAY:
-
-#pragma region ƒVƒFƒCƒN
-
-            randMax--;
-            if (randMax < 1) {
-                randMax = 1;
-            }
-
-            wrand.x = float(rand() % randMax - randMax / 2);
-            wrand.y = float(rand() % randMax - randMax / 2);
-#pragma endregion
-
-#pragma region “G
-
-            for (int i = 0; i < maxEnemy; i++) {
-                enemies[i].theta += float(M_PI) / 60.0f;
-                if (enemies[i].enemyType == 0) {
-                    // ‰~ó‚É“®‚­“G
-                    enemies[8].pos.x = cosf(enemies[i].theta + (i * 2 * (float)M_PI)) * enemies[i].amplitude + 150.0f; 
-                    enemies[8].pos.y = sinf(enemies[i].theta + (i * 2 * (float)M_PI)) * enemies[i].amplitude + 360.0f;
-
-                    enemies[9].pos.x = cosf(enemies[i].theta + (i * 2 * (float)M_PI)) * enemies[i].amplitude + 300.0f;
-                    enemies[9].pos.y = sinf(enemies[i].theta + (i * 2 * (float)M_PI)) * enemies[i].amplitude + 0.0f;
-
-                } else if (enemies[i].enemyType == 1) { 
-                    // c•ûŒü‚É‰•œ‚·‚é“G
-                    enemies[6].pos.x = 500.0f; 
-                    enemies[6].pos.y = sinf(enemies[i].theta) * enemies[i].amplitude + (720.0f / 2.0f);
-
-                    enemies[7].pos.x = 800.0f;
-                    enemies[7].pos.y = sinf(enemies[i].theta) * enemies[i].amplitude + (720.0f / 2.0f);
-                } else if (enemies[i].enemyType == 2) {
-                    // ‰¡•ûŒü‚É‰•œ‚·‚é“G
-                    enemies[0].pos.x = sinf(enemies[i].theta) * enemies[i].amplitude + 175.0f;
-                    enemies[0].pos.y = 0.0f; 
-
-                    enemies[1].pos.x = sinf(enemies[i].theta) * enemies[i].amplitude + 170.0f;
-                    enemies[1].pos.y = 720.0f;
-
-                    enemies[2].pos.x = sinf(enemies[i].theta) * enemies[i].amplitude + 1280.0f;
-                    enemies[2].pos.y = 0.0f;
-
-                    enemies[3].pos.x = sinf(enemies[i].theta) * enemies[i].amplitude + 1280.0f;
-                    enemies[3].pos.y = 720.0f;
-
-                    enemies[4].pos.x = sinf(enemies[i].theta) * (enemies[i].amplitude * 2) + 1130.0f;
-                    enemies[4].pos.y = 200.0f;
-
-                    enemies[5].pos.x = sinf(enemies[i].theta) * (enemies[i].amplitude * 2) + 1130.0f;
-                    enemies[5].pos.y = 520.0f;
-
-                    enemies[10].pos = horizonEnemy({ 150.0f,300.0f }, 150.0f, enemies[i].theta);
-                }
-            }
-
+	Camera camera{
+		{0.0f, 0.0f},
+		{0.0f, 0.0f}
+	};
 
 #pragma endregion
 
-#pragma region ƒvƒŒƒCƒ„[
+#pragma region ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼
 
-            // ƒXƒeƒBƒbƒN‚Ì“ü—Í‚ğæ“¾
-            Novice::GetAnalogInputLeft(0, &leftStickX, &leftStickY);
+	int leftStickX = 0;
+	int leftStickY = 0;
+	const float easingSpeed = 0.2f;
 
-            if (std::abs(leftStickX) > 8000 || std::abs(leftStickY) > 8000) {
-
-                float magnitude = std::sqrtf(float(leftStickX * leftStickX + leftStickY * leftStickY));
-                Vector2 direction = {
-                    (float)leftStickX / magnitude,
-                    (float)leftStickY / magnitude
-                };
-
-                // ƒJ[ƒ\ƒ‹‚ÌˆÊ’u‚ğŒvZ
-                cursor.pos.x = player.pos.x + direction.x * dashDistance;
-                cursor.pos.y = player.pos.y + direction.y * dashDistance;
-
-                // ƒ_ƒbƒVƒ…
-                if (Novice::IsTriggerButton(0, kPadButton10)) {
-
-                    // –Ú•WˆÊ’u‚ğXV
-                    player.targetPos.x = cursor.pos.x;
-                    player.targetPos.y = cursor.pos.y;
-
-                    // ƒAƒjƒ[ƒVƒ‡ƒ“XV
-                    player.isAnimation = true;
-                    player.animeCount = 30;
-
-                    // ƒ_ƒbƒVƒ…‚Éƒp[ƒeƒBƒNƒ‹‚ğ¶¬
-                    for (int j = 0; j < particlesToGenerate; ++j) {
-                        for (int i = 0; i < maxParticles; ++i) {
-                            if (!particles[i].isActive) {
-                                particles[i].pos = player.pos;
-
-                                particles[i].baseAngle = atan2f(player.targetPos.y - player.pos.y, player.targetPos.x - player.pos.x) + ((float)M_PI); 
-
-                                particles[i].randomAngle = particles[i].baseAngle + ((rand() % 30 - 15) * (float)M_PI / 180.0f); 
-
-                                particles[i].speed = 5.0f + (rand() % 5); 
-
-                                particles[i].velocity = { cosf(particles[i].randomAngle) * particles[i].speed, sinf(particles[i].randomAngle) * particles[i].speed };
-
-                                particles[i].radius = 5.0f;
-                                particles[i].lifeTime = 60; 
-                                particles[i].isActive = true;
-
-                                break;
-                            }
-                        }
-                    }
-                }
-            } else {
-
-                // ƒXƒeƒBƒbƒN‚ª–ß‚Á‚½‚çƒJ[ƒ\ƒ‹‚ğƒvƒŒƒCƒ„[‚ÌˆÊ’u‚É–ß‚·
-                cursor.pos = player.pos;
-            }
-
-#pragma region ƒL[ƒ{[ƒh
-
-            if (keys[DIK_W]) {
-
-                player.pos.y -= 10.0f;
-            }
-            if (keys[DIK_S]) {
-
-                player.pos.y += 10.0f;
-            }
-            if (keys[DIK_A]) {
-
-                player.pos.x -= 10.0f;
-            }
-            if (keys[DIK_D]) {
-
-                player.pos.x += 10.0f;
-            }
-#pragma endregion
-
-            // ƒvƒŒƒCƒ„[‚ÌˆÊ’u‚ğ–Ú•WˆÊ’u‚ÉŒü‚©‚Á‚ÄƒC[ƒWƒ“ƒOˆÚ“®
-            player.pos.x += (player.targetPos.x - player.pos.x) * easingSpeed;
-            player.pos.y += (player.targetPos.y - player.pos.y) * easingSpeed;
-
-            //**************** ˆÚ“®§ŒÀ
-
-            if (player.pos.x < player.radius) {
-                player.pos.x = player.radius;  // ¶’[‚Å‚Ì§ŒÀ
-            }
-
-            if (player.pos.y < player.radius) {
-                player.pos.y = player.radius;  // ã’[‚Å‚Ì§ŒÀ
-            }
-            if (player.pos.y > (720.0f - player.radius)) {
-                player.pos.y = 720.0f - player.radius;  // ‰º’[‚Å‚Ì§ŒÀ
-            }
-
-            //**************ƒŠƒXƒ|[ƒ“
-            if(!player.isAlive) {
-            
-                player.respawCoolTime--;
-
-                // ƒJ[ƒ\ƒ‹‰Šú‰»
-                cursor.pos = player.pos;
-
-                // ƒvƒŒƒCƒ„[‚ÌˆÊ’u
-                player.pos = player.checkPointPos;
-                player.targetPos = player.checkPointPos;
-
-                // ƒJƒƒ‰‚ÌˆÊ’u
-                camera.targetPos.x = player.pos.x - 120.0f;
-
-                player.animeCount = 0;
-                player.screenPosX = 0;
-
-            }
-
-            if (player.respawCoolTime <= 0.0f) {
-
-                player.respawCoolTime = 60;
-
-                player.isAlive = true;
-            }
-
-            // *****************ƒ`ƒFƒbƒNƒ|ƒCƒ“ƒg
-            if (player.pos.x >= checkPoint.pos.x) {
-
-                player.checkPointPos.x = checkPoint.pos.x;
-            }
-
-            // ****************ƒS[ƒ‹
-            if (player.pos.x >= clearLine.x) {
-
-
-            }
-
-            // *****************ƒAƒjƒ[ƒVƒ‡ƒ“
-
-            if (player.isAnimation) {
-
-                player.animeCount--;
-                if (player.animeCount <= 30) {
-
-                    player.screenPosX = 120;
-                    if (player.animeCount <= 25) {
-                        player.screenPosX = 60;
-
-                        if (player.animeCount <= 20) {
-                            player.screenPosX = 0;
-                         
-                            if (player.animeCount <= 0) {
-
-                                player.animeCount = 0;
-                                player.isAnimation = false;
-                            }
-                        }
-                    }
-                }
-            } else {
-
-                player.animeCount++;
-                if (player.animeCount >= 7) {
-
-                    player.screenPosX = 60;
-                    if (player.animeCount >= 14) {
-                        player.screenPosX = 120;
-
-                        if (player.animeCount >= 20) {
-                            player.screenPosX = 180;
-                            player.animeCount = 30;
-                           
-                        }
-                    }
-                }
-            }
-
-#pragma region ƒp[ƒeƒBƒNƒ‹
-            // ƒp[ƒeƒBƒNƒ‹‚ÌXVˆ—
-            for (int i = 0; i < maxParticles; ++i) {
-                if (particles[i].isActive) {
-                    particles[i].pos.x += particles[i].velocity.x;
-                    particles[i].pos.y += particles[i].velocity.y;
-
-                    particles[i].velocity.y += 0.4f; 
-
-                    particles[i].lifeTime--;
-                    if (particles[i].lifeTime <= 0) {
-                        particles[i].isActive = false;
-                    }
-                }
-            }
+	// XPADç”¨
+	XINPUT_STATE state;
 
 #pragma endregion
 
+	//ã‚·ã‚§ã‚¤ã‚¯
+	Vector2 wrand = { 0.0f };
+	int randMax = 0;
+
+	//*****************************************************//
+
+
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®Ã—ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã‚‹ã¾ã§ãƒ«ãƒ¼ãƒ—
+	while (Novice::ProcessMessage() == 0) {
+		// ãƒ•ãƒ¬ãƒ¼ãƒ ã®é–‹å§‹
+		Novice::BeginFrame();
+
+		// ã‚­ãƒ¼å…¥åŠ›ã‚’å—ã‘å–ã‚‹
+		memcpy(preKeys, keys, 256);
+		Novice::GetHitKeyStateAll(keys);
+		XInputGetState(0, &state);
+
+		switch (scene)
+		{
+		case START:
+
+			//ã‚¹ãƒšãƒ¼ã‚¹æŠ¼ã—ãŸã‚‰ã‚·ãƒ¼ãƒ³åˆ‡ã‚Šæ›¿ãˆ
+			if (keys[DIK_SPACE] && preKeys[DIK_SPACE] == 0) {
+
+				scene = PLAY;
+			}
+			break;
+		case PLAY:
+
+#pragma region ã‚·ã‚§ã‚¤ã‚¯
+
+			randMax--;
+			if (randMax < 1) {
+				randMax = 1;
+			}
+
+			wrand.x = float(rand() % randMax - randMax / 2);
+			wrand.y = float(rand() % randMax - randMax / 2);
 #pragma endregion
 
-#pragma region ƒJƒƒ‰
+#pragma region æ•µ
 
-            // ƒJƒƒ‰‚ğƒXƒNƒ[ƒ‹‚³‚¹‚é
-            if (player.pos.x >= 1280.0f / 2.0f) {
-                camera.targetPos.x = player.pos.x - (1280.0f / 2.0f);
-            }
-            
-            // ƒvƒŒƒCƒ„[‚ª‰ŠúÀ•W‚Ì”¼•ªˆÈ‰º‚É—ˆ‚½‚çƒJƒƒ‰‚ğƒfƒtƒHƒ‹ƒg‚É–ß‚·
-            if (player.pos.x <= 1280.0f / 2.0f){
-                camera.targetPos.x = 0.0f;
-            }
+			for (int i = 0; i < maxEnemy; i++) {
+				enemies[i].theta += float(M_PI) / 60.0f;
+				if (enemies[i].enemyType == 0) {
+					// å††çŠ¶ã«å‹•ãæ•µ
+					///ã‚¹ãƒ†ãƒ¼ã‚¸ï¼‘
+					/*enemies[0].pos = circleEnemy({ 320.0f, 0.0f }, 150.0f, enemies[i].theta);
+					enemies[1].pos = circleEnemy({ 640.0f, 180.0f }, 150.0f, enemies[i].theta);
+					enemies[2].pos = circleEnemy({ 960.0f, 0.0f }, 150.0f, enemies[i].theta);
+					enemies[3].pos = circleEnemy({ 150.0f, 360.0f }, 150.0f, enemies[i].theta);
+					enemies[4].pos = circleEnemy({ 480.0f, 540.0f }, 150.0f, enemies[i].theta);
+					enemies[5].pos = circleEnemy({ 800.0f, 540.0f }, 150.0f, enemies[i].theta);
+					enemies[6].pos = circleEnemy({ 960.0f, 360.0f }, 150.0f, enemies[i].theta);*/
+					///ã‚¹ãƒ†ãƒ¼ã‚¸ï¼’
+					enemies[15].pos = circleEnemy({ 640.0f , 360.0f }, 100.0f, enemies[i].theta, 300);
+					enemies[16].pos = circleEnemy({ 640.0f , 360.0f }, 200.0f, enemies[i].theta, 300);
+					enemies[17].pos = circleEnemy({ 640.0f , 360.0f }, 300.0f, enemies[i].theta, 300);
+					enemies[18].pos = circleEnemy({ 640.0f , 360.0f }, 400.0f, enemies[i].theta, 300);
+					enemies[19].pos = circleEnemy({ 640.0f , 360.0f }, 500.0f, enemies[i].theta, 300);
+					enemies[20].pos = circleEnemy({ 640.0f , 360.0f }, 600.0f, enemies[i].theta, 300);
 
-            // ƒJƒƒ‰ƒC[ƒWƒ“ƒO
-            camera.pos = Lerp(camera.pos, camera.targetPos, 0.1f);
+				}
+				else if (enemies[i].enemyType == 1) {
+					// ç¸¦æ–¹å‘ã«å¾€å¾©ã™ã‚‹æ•µ
+					///ã‚¹ãƒ†ãƒ¼ã‚¸ï¼‘
+					/*enemies[7].pos = verticalEnemy({ 480.0f, 360.0f }, 150.0f, enemies[i].theta);
+					enemies[8].pos = verticalEnemy({ 640.0f, 360.0f }, 150.0f, enemies[i].theta);*/
+					///ã‚¹ãƒ†ãƒ¼ã‚¸ï¼“
 
-            camera.pos.x += wrand.x;
-            camera.pos.y += wrand.y;
+				}
+				else if (enemies[i].enemyType == 2) {
+					// æ¨ªæ–¹å‘ã«å¾€å¾©ã™ã‚‹æ•µ
+					/*enemies[9].pos = horizonEnemy({ 160.0f,0.0f }, 150.0f, enemies[i].theta);
+					enemies[10].pos = horizonEnemy({ 1120.0f,0.0f }, 150.0f, enemies[i].theta);
+					enemies[11].pos = horizonEnemy({ 960.0f,160.0f }, 300.0f, enemies[i].theta);
+					enemies[12].pos = horizonEnemy({ 960.0f,540.0f }, 300.0f, enemies[i].theta);
+					enemies[13].pos = horizonEnemy({ 160.0f,1280.0f }, 300.0f, enemies[i].theta);
+					enemies[14].pos = horizonEnemy({ 1120.0f,1280.0f }, 300.0f, enemies[i].theta);*/
 
-#pragma endregion
+				}
+			}
 
-#pragma region “–‚½‚è”»’è
-
-            for (int i = 0; i < maxEnemy; i++) {
-                if (isCollision(player.pos, enemies[i].pos, player.radius, enemies[i].radius)) {
-
-                    player.isAlive = false;
-                    //randMax = 21;
-                }
-            }
-
-#pragma endregion
-
-#pragma region •`‰æ
-
-            //**************************”wŒi
-            Novice::DrawBox(0 - (int)camera.pos.x, 0 - (int)camera.pos.y,
-                1280, 720, 0.0f, BLACK, kFillModeSolid);
-
-            //**************************“G
-            // “G‚Ì•`‰æ
-            for (int i = 0; i < maxEnemy; i++) {
-                Novice::DrawEllipse((int)(enemies[i].pos.x - camera.pos.x), (int)(enemies[i].pos.y - camera.pos.y),
-                    (int)enemies[i].radius, (int)enemies[i].radius,
-                    0.0f, RED, kFillModeSolid);
-            }
-
-            //*************************ƒJ[ƒ\ƒ‹‚Ì•`‰æ
-            if (player.isAlive) {
-                Novice::DrawEllipse(
-                    (int)(cursor.pos.x - camera.pos.x), (int)(cursor.pos.y - camera.pos.y),
-                    10, 10,
-                    0.0f, RED, kFillModeSolid
-                );
-
-                // ƒvƒŒƒCƒ„[‚ÆƒJ[ƒ\ƒ‹‚ÌŠÔ‚É¬‚³‚È‰~‚ğ2‚Â•`‰æ
-                Vector2 midPoint1 = Lerp(player.pos, cursor.pos, 0.33f);
-                Vector2 midPoint2 = Lerp(player.pos, cursor.pos, 0.66f);
-
-                Novice::DrawEllipse(
-                    (int)(midPoint1.x - camera.pos.x), (int)(midPoint1.y - camera.pos.y),
-                    5, 5,
-                    0.0f, RED, kFillModeSolid
-                );
-
-                Novice::DrawEllipse(
-                    (int)(midPoint2.x - camera.pos.x), (int)(midPoint2.y - camera.pos.y),
-                    5, 5,
-                    0.0f, RED, kFillModeSolid
-                );
-
-            }
-
-            //*********************ƒ`ƒFƒbƒNƒ|ƒCƒ“ƒg
-            Novice::DrawLine((int)checkPoint.pos.x - (int)camera.pos.x, 0, (int)checkPoint.pos.x - (int)camera.pos.x, 720, RED);
-
-            //**********************ƒS[ƒ‹
-            Novice::DrawLine((int)clearLine.x - (int)camera.pos.x, 0, (int)clearLine.x - (int)camera.pos.x, 720, WHITE);
-
-            //**************************ƒvƒŒƒCƒ„[‚Ì•`‰æ
-            if (player.isAlive) {
-
-                Novice::DrawQuad(
-                    ((int)player.pos.x - (int)player.radius) - (int)camera.pos.x, ((int)player.pos.y - (int)player.radius) - (int)camera.pos.y,
-                    ((int)player.pos.x + (int)player.radius) - (int)camera.pos.x, ((int)player.pos.y - (int)player.radius) - (int)camera.pos.y,
-                    ((int)player.pos.x - (int)player.radius) - (int)camera.pos.x, ((int)player.pos.y + (int)player.radius) - (int)camera.pos.y,
-                    ((int)player.pos.x + (int)player.radius) - (int)camera.pos.x, ((int)player.pos.y + (int)player.radius) - (int)camera.pos.y,
-                    player.screenPosX, 0, 60, 60, player.th, 0xFFFFFFFF);
-                
-                Novice::DrawEllipse(
-                    (int)(player.pos.x - camera.pos.x), (int)(player.pos.y - camera.pos.y),
-                    (int)player.radius, (int)player.radius,
-                    0.0f, 0xFFFFFF00, kFillModeWireFrame
-                );
-            }
-
-            //**********************ƒp[ƒeƒBƒNƒ‹
-
-            for (int i = 0; i < maxParticles; ++i) {
-                if (particles[i].isActive) {
-                    Novice::DrawEllipse(
-                        (int)particles[i].pos.x - (int)camera.pos.x, (int)particles[i].pos.y - (int)camera.pos.y,
-                        (int)particles[i].radius, (int)particles[i].radius,
-                        0.0f, WHITE, kFillModeSolid
-                    );
-                }
-            }
-
-
-            
-            //************************ƒfƒoƒbƒO—p
-            Novice::ScreenPrintf(0, 20, "PlayerPosX : %.2f", player.pos.x);
-
-            Novice::ScreenPrintf(0, 40, "CameraPosX : %.2f", camera.pos.x);
-
-            Novice::ScreenPrintf(0, 60, "animeCount : %d", player.animeCount);
 
 #pragma endregion
 
-            break;
-        case CLEAR:
-            break;
-        case END:
-            break;
-        }
+#pragma region ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
 
-        // ƒfƒoƒbƒO—p
-        Novice::ScreenPrintf(0, 0, "scene = %d", scene);
+			// ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å…¥åŠ›ã‚’å–å¾—
+			Novice::GetAnalogInputLeft(0, &leftStickX, &leftStickY);
 
-        /// ª•`‰æˆ—‚±‚±‚Ü‚Å
-        ///
+			if (std::abs(leftStickX) > 8000 || std::abs(leftStickY) > 8000) {
 
-        // ƒtƒŒ[ƒ€‚ÌI—¹
-        Novice::EndFrame();
+				float magnitude = std::sqrtf(float(leftStickX * leftStickX + leftStickY * leftStickY));
+				Vector2 direction = {
+					(float)leftStickX / magnitude,
+					(float)leftStickY / magnitude
+				};
 
-        // ESCƒL[‚ª‰Ÿ‚³‚ê‚½‚çƒ‹[ƒv‚ğ”²‚¯‚é
-        if (preKeys[DIK_ESCAPE] == 0 && keys[DIK_ESCAPE] != 0) {
-            break;
-        }
-    }
+				// ã‚«ãƒ¼ã‚½ãƒ«ã®ä½ç½®ã‚’è¨ˆç®—
+				cursor.pos.x = player.pos.x + direction.x * dashDistance;
+				cursor.pos.y = player.pos.y + direction.y * dashDistance;
 
-    // ƒ‰ƒCƒuƒ‰ƒŠ‚ÌI—¹
-    Novice::Finalize();
-    return 0;
+				// ãƒ€ãƒƒã‚·ãƒ¥
+				if (Novice::IsTriggerButton(0, kPadButton10)) {
+
+					// ç›®æ¨™ä½ç½®ã‚’æ›´æ–°
+					player.targetPos.x = cursor.pos.x;
+					player.targetPos.y = cursor.pos.y;
+
+					// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ›´æ–°
+					player.isAnimation = true;
+					player.animeCount = 30;
+
+					// ãƒ€ãƒƒã‚·ãƒ¥æ™‚ã«ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã‚’ç”Ÿæˆ
+					for (int j = 0; j < particlesToGenerate; ++j) {
+						for (int i = 0; i < maxParticles; ++i) {
+							if (!particles[i].isActive) {
+								particles[i].pos = player.pos;
+
+								particles[i].baseAngle = atan2f(player.targetPos.y - player.pos.y, player.targetPos.x - player.pos.x) + ((float)M_PI);
+
+								particles[i].randomAngle = particles[i].baseAngle + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
+
+								particles[i].speed = 5.0f + (rand() % 5);
+
+								particles[i].velocity = { cosf(particles[i].randomAngle) * particles[i].speed, sinf(particles[i].randomAngle) * particles[i].speed };
+
+								particles[i].radius = 5.0f;
+								particles[i].lifeTime = 60;
+								particles[i].isActive = true;
+
+								break;
+							}
+						}
+					}
+				}
+			}
+			else {
+
+				// ã‚¹ãƒ†ã‚£ãƒƒã‚¯ãŒæˆ»ã£ãŸã‚‰ã‚«ãƒ¼ã‚½ãƒ«ã‚’ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ã«æˆ»ã™
+				cursor.pos = player.pos;
+			}
+
+#pragma region ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰
+
+			if (keys[DIK_W]) {
+
+				player.targetPos.y -= 10.0f;
+			}
+			if (keys[DIK_S]) {
+
+				player.targetPos.y += 10.0f;
+			}
+			if (keys[DIK_A]) {
+
+				player.targetPos.x -= 10.0f;
+			}
+			if (keys[DIK_D]) {
+
+				player.targetPos.x += 10.0f;
+			}
+#pragma endregion
+
+			// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ã‚’ç›®æ¨™ä½ç½®ã«å‘ã‹ã£ã¦ã‚¤ãƒ¼ã‚¸ãƒ³ã‚°ç§»å‹•
+			player.pos.x += (player.targetPos.x - player.pos.x) * easingSpeed;
+			player.pos.y += (player.targetPos.y - player.pos.y) * easingSpeed;
+
+			//**************** ç§»å‹•åˆ¶é™
+
+			if (player.pos.x < player.radius) {
+				player.pos.x = player.radius;  // å·¦ç«¯ã§ã®åˆ¶é™
+			}
+
+			if (player.pos.y < player.radius) {
+				player.pos.y = player.radius;  // ä¸Šç«¯ã§ã®åˆ¶é™
+			}
+			if (player.pos.y > (720.0f - player.radius)) {
+				player.pos.y = 720.0f - player.radius;  // ä¸‹ç«¯ã§ã®åˆ¶é™
+			}
+
+			//**************ãƒªã‚¹ãƒãƒ¼ãƒ³
+			if (!player.isAlive) {
+
+				player.respawCoolTime--;
+
+				// ã‚«ãƒ¼ã‚½ãƒ«åˆæœŸåŒ–
+				cursor.pos = player.pos;
+
+				// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®
+				player.pos = player.checkPointPos;
+				player.targetPos = player.checkPointPos;
+
+				// ã‚«ãƒ¡ãƒ©ã®ä½ç½®
+				camera.targetPos.x = player.pos.x - 120.0f;
+
+				player.animeCount = 0;
+				player.screenPosX = 0;
+
+			}
+
+			if (player.respawCoolTime <= 0.0f) {
+
+				player.respawCoolTime = 60;
+
+				player.isAlive = true;
+			}
+
+			// *****************ãƒã‚§ãƒƒã‚¯ãƒã‚¤ãƒ³ãƒˆ
+			if (player.pos.x >= checkPoint.pos.x) {
+
+				player.checkPointPos.x = checkPoint.pos.x;
+			}
+
+			// ****************ã‚´ãƒ¼ãƒ«
+			if (player.pos.x >= clearLine.x) {
+
+
+			}
+
+			// *****************ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³
+
+			if (player.isAnimation) {
+
+				player.animeCount--;
+				if (player.animeCount <= 30) {
+
+					player.screenPosX = 120;
+					if (player.animeCount <= 25) {
+						player.screenPosX = 60;
+
+						if (player.animeCount <= 20) {
+							player.screenPosX = 0;
+
+							if (player.animeCount <= 0) {
+
+								player.animeCount = 0;
+								player.isAnimation = false;
+							}
+						}
+					}
+				}
+			}
+			else {
+
+				player.animeCount++;
+				if (player.animeCount >= 7) {
+
+					player.screenPosX = 60;
+					if (player.animeCount >= 14) {
+						player.screenPosX = 120;
+
+						if (player.animeCount >= 20) {
+							player.screenPosX = 180;
+							player.animeCount = 30;
+
+						}
+					}
+				}
+			}
+
+#pragma region ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«
+			// ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ã®æ›´æ–°å‡¦ç†
+			for (int i = 0; i < maxParticles; ++i) {
+				if (particles[i].isActive) {
+					particles[i].pos.x += particles[i].velocity.x;
+					particles[i].pos.y += particles[i].velocity.y;
+
+					particles[i].velocity.y += 0.4f;
+
+					particles[i].lifeTime--;
+					if (particles[i].lifeTime <= 0) {
+						particles[i].isActive = false;
+					}
+				}
+			}
+
+#pragma endregion
+
+#pragma endregion
+
+#pragma region ã‚«ãƒ¡ãƒ©
+
+			// ã‚«ãƒ¡ãƒ©ã‚’ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã•ã›ã‚‹
+			if (player.pos.x >= 1280.0f / 2.0f) {
+				camera.targetPos.x = player.pos.x - (1280.0f / 2.0f);
+			}
+
+			// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒåˆæœŸåº§æ¨™ã®åŠåˆ†ä»¥ä¸‹ã«æ¥ãŸã‚‰ã‚«ãƒ¡ãƒ©ã‚’ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã«æˆ»ã™
+			if (player.pos.x <= 1280.0f / 2.0f) {
+				camera.targetPos.x = 0.0f;
+			}
+
+			// ã‚«ãƒ¡ãƒ©ã‚¤ãƒ¼ã‚¸ãƒ³ã‚°
+			camera.pos = Lerp(camera.pos, camera.targetPos, 0.1f);
+
+			camera.pos.x += wrand.x;
+			camera.pos.y += wrand.y;
+
+#pragma endregion
+
+#pragma region å½“ãŸã‚Šåˆ¤å®š
+
+			for (int i = 0; i < maxEnemy; i++) {
+				if (isCollision(player.pos, enemies[i].pos, player.radius, enemies[i].radius)) {
+
+					player.isAlive = false;
+					//randMax = 21;
+				}
+			}
+
+#pragma endregion
+
+#pragma region æç”»
+
+			//**************************èƒŒæ™¯
+			Novice::DrawBox(0 - (int)camera.pos.x, 0 - (int)camera.pos.y,
+				1280, 720, 0.0f, BLACK, kFillModeSolid);
+
+			//**************************æ•µ
+			// æ•µã®æç”»
+			for (int i = 0; i < maxEnemy; i++) {
+				Novice::DrawEllipse((int)(enemies[i].pos.x - camera.pos.x), (int)(enemies[i].pos.y - camera.pos.y),
+					(int)enemies[i].radius, (int)enemies[i].radius,
+					0.0f, RED, kFillModeSolid);
+			}
+
+			//*************************ã‚«ãƒ¼ã‚½ãƒ«ã®æç”»
+			if (player.isAlive) {
+				Novice::DrawEllipse(
+					(int)(cursor.pos.x - camera.pos.x), (int)(cursor.pos.y - camera.pos.y),
+					10, 10,
+					0.0f, RED, kFillModeSolid
+				);
+
+				// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¨ã‚«ãƒ¼ã‚½ãƒ«ã®é–“ã«å°ã•ãªå††ã‚’2ã¤æç”»
+				Vector2 midPoint1 = Lerp(player.pos, cursor.pos, 0.33f);
+				Vector2 midPoint2 = Lerp(player.pos, cursor.pos, 0.66f);
+
+				Novice::DrawEllipse(
+					(int)(midPoint1.x - camera.pos.x), (int)(midPoint1.y - camera.pos.y),
+					5, 5,
+					0.0f, RED, kFillModeSolid
+				);
+
+				Novice::DrawEllipse(
+					(int)(midPoint2.x - camera.pos.x), (int)(midPoint2.y - camera.pos.y),
+					5, 5,
+					0.0f, RED, kFillModeSolid
+				);
+
+			}
+
+			//*********************ãƒã‚§ãƒƒã‚¯ãƒã‚¤ãƒ³ãƒˆ
+			Novice::DrawLine((int)checkPoint.pos.x - (int)camera.pos.x, 0, (int)checkPoint.pos.x - (int)camera.pos.x, 720, RED);
+
+			//**********************ã‚´ãƒ¼ãƒ«
+			Novice::DrawLine((int)clearLine.x - (int)camera.pos.x, 0, (int)clearLine.x - (int)camera.pos.x, 720, WHITE);
+
+			//**************************ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æç”»
+			if (player.isAlive) {
+
+				Novice::DrawQuad(
+					((int)player.pos.x - (int)player.radius) - (int)camera.pos.x, ((int)player.pos.y - (int)player.radius) - (int)camera.pos.y,
+					((int)player.pos.x + (int)player.radius) - (int)camera.pos.x, ((int)player.pos.y - (int)player.radius) - (int)camera.pos.y,
+					((int)player.pos.x - (int)player.radius) - (int)camera.pos.x, ((int)player.pos.y + (int)player.radius) - (int)camera.pos.y,
+					((int)player.pos.x + (int)player.radius) - (int)camera.pos.x, ((int)player.pos.y + (int)player.radius) - (int)camera.pos.y,
+					player.screenPosX, 0, 60, 60, player.th, 0xFFFFFFFF);
+
+				Novice::DrawEllipse(
+					(int)(player.pos.x - camera.pos.x), (int)(player.pos.y - camera.pos.y),
+					(int)player.radius, (int)player.radius,
+					0.0f, 0xFFFFFF00, kFillModeWireFrame
+				);
+			}
+
+			//**********************ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«
+
+			for (int i = 0; i < maxParticles; ++i) {
+				if (particles[i].isActive) {
+					Novice::DrawEllipse(
+						(int)particles[i].pos.x - (int)camera.pos.x, (int)particles[i].pos.y - (int)camera.pos.y,
+						(int)particles[i].radius, (int)particles[i].radius,
+						0.0f, WHITE, kFillModeSolid
+					);
+				}
+			}
+
+
+
+			//************************ãƒ‡ãƒãƒƒã‚°ç”¨
+			Novice::ScreenPrintf(0, 20, "PlayerPosX : %.2f", player.pos.x);
+
+			Novice::ScreenPrintf(0, 40, "CameraPosX : %.2f", camera.pos.x);
+
+			Novice::ScreenPrintf(0, 60, "animeCount : %d", player.animeCount);
+
+#pragma endregion
+
+			break;
+		case CLEAR:
+			break;
+		case END:
+			break;
+		}
+
+		// ãƒ‡ãƒãƒƒã‚°ç”¨
+		Novice::ScreenPrintf(0, 0, "scene = %d", scene);
+
+		/// â†‘æç”»å‡¦ç†ã“ã“ã¾ã§
+		///
+
+		// ãƒ•ãƒ¬ãƒ¼ãƒ ã®çµ‚äº†
+		Novice::EndFrame();
+
+		// ESCã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸã‚‰ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
+		if (preKeys[DIK_ESCAPE] == 0 && keys[DIK_ESCAPE] != 0) {
+			break;
+		}
+	}
+
+	// ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®çµ‚äº†
+	Novice::Finalize();
+	return 0;
 }
