@@ -70,8 +70,8 @@ Vector2 circleEnemy(Vector2 pos, float amplitude, float &theta, float velocity) 
 
 	theta += float(M_PI) / velocity; ///
 
-	result.x = cosf(5 * theta + (float)M_PI) * amplitude + pos.x;
-	result.y = sinf(5 * theta + (float)M_PI) * amplitude + pos.y;
+	result.x = cosf(theta + (float)M_PI) * amplitude + pos.x;
+	result.y = sinf(theta + (float)M_PI) * amplitude + pos.y;
 
 	return result;
 }
@@ -264,7 +264,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma region 敵
 
 			for (int i = 0; i < maxEnemy; i++) {
-				enemies[i].theta += float(M_PI) / 60.0f;
+				//enemies[i].theta += float(M_PI) / 60.0f;
 				if (enemies[i].enemyType == 0) {
 					// 円状に動く敵
 					///ステージ１
@@ -276,12 +276,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					enemies[5].pos = circleEnemy({ 800.0f, 540.0f }, 150.0f, enemies[i].theta);
 					enemies[6].pos = circleEnemy({ 960.0f, 360.0f }, 150.0f, enemies[i].theta);*/
 					///ステージ２
-					enemies[15].pos = circleEnemy({ 640.0f , 360.0f }, 100.0f, enemies[i].theta, 300);
+					/*enemies[15].pos = circleEnemy({ 640.0f , 360.0f }, 100.0f, enemies[i].theta, 300);
 					enemies[16].pos = circleEnemy({ 640.0f , 360.0f }, 200.0f, enemies[i].theta, 300);
 					enemies[17].pos = circleEnemy({ 640.0f , 360.0f }, 300.0f, enemies[i].theta, 300);
 					enemies[18].pos = circleEnemy({ 640.0f , 360.0f }, 400.0f, enemies[i].theta, 300);
 					enemies[19].pos = circleEnemy({ 640.0f , 360.0f }, 500.0f, enemies[i].theta, 300);
-					enemies[20].pos = circleEnemy({ 640.0f , 360.0f }, 600.0f, enemies[i].theta, 300);
+					enemies[20].pos = circleEnemy({ 640.0f , 360.0f }, 600.0f, enemies[i].theta, 300);*/
 
 				}
 				else if (enemies[i].enemyType == 1) {
@@ -290,6 +290,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					/*enemies[7].pos = verticalEnemy({ 480.0f, 360.0f }, 150.0f, enemies[i].theta);
 					enemies[8].pos = verticalEnemy({ 640.0f, 360.0f }, 150.0f, enemies[i].theta);*/
 					///ステージ３
+					enemies[21].pos = verticalEnemy({ 160.0f, 180.0f }, 150.0f, enemies[i].theta, 600);
+					enemies[22].pos = verticalEnemy({ 640.0f, 180.0f }, 150.0f, enemies[i].theta, 600);
+					enemies[23].pos = verticalEnemy({ 800.0f, 180.0f }, 150.0f, enemies[i].theta, 600);
+					enemies[24].pos = verticalEnemy({ 960.0f, 180.0f }, 150.0f, enemies[i].theta, 600); ///up
+					enemies[25].pos = verticalEnemy({ 80.0f, 360.0f }, 150.0f, enemies[i].theta, 600);
+					enemies[26].pos = verticalEnemy({ 80.0f, 630.0f }, 100.0f, enemies[i].theta, 600);
+					enemies[27].pos = verticalEnemy({ 160.0f, 540.0f }, 150.0f, enemies[i].theta, 600); ///down
+					enemies[28].pos = verticalEnemy({ 320.0f, 540.0f }, 150.0f, enemies[i].theta, 600);
+					enemies[29].pos = verticalEnemy({ 480.0f, 540.0f }, 150.0f, enemies[i].theta, 600);
+					enemies[30].pos = verticalEnemy({ 640.0f, 540.0f }, 150.0f, enemies[i].theta, 600);
+					enemies[31].pos = verticalEnemy({ 800.0f, 540.0f }, 150.0f, enemies[i].theta, 600);
+					enemies[32].pos = verticalEnemy({ 880.0f, 400.0f }, 150.0f, enemies[i].theta, 600);
+					enemies[33].pos = verticalEnemy({ 960.0f, 400.0f }, 150.0f, enemies[i].theta, 600);
 
 				}
 				else if (enemies[i].enemyType == 2) {
@@ -629,6 +642,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		// デバッグ用
 		Novice::ScreenPrintf(0, 0, "scene = %d", scene);
+		Novice::DrawLine(0, 360, 1280, 360, GREEN);
+		Novice::DrawLine(640, 0, 640, 720, GREEN);
 
 		/// ↑描画処理ここまで
 		///
