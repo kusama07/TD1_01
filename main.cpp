@@ -57,22 +57,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	FillMode solid = kFillModeSolid;
 
-	Enemy enemy1;
-	enemy1.pos.x = 100;
-	enemy1.pos.y = 300;
-	enemy1.radius = 20;
+	Enemy enemyH1 = { 200,200,20 };
+	Enemy enemyH2 = { 200,400,20 };
 
-	Enemy enemy2;
-	enemy2.pos.x = 400;
-	enemy2.pos.y = 300;
-	enemy2.radius = 20;
+	Enemy enemyV1 = { 100,200,20 };
+	Enemy enemyV2 = { 100,400,20 };
+	Enemy enemyV3 = { 200,200,20 };
+	Enemy enemyV4 = { 200,400,20 };
 
-	Enemy enemy3;
-	enemy3.pos.x = 700;
-	enemy3.pos.y = 300;
-	enemy3.radius = 20;
+
+	Enemy enemyR1 = { 700,300,20 };
 
 	float theta = 0.0f;
+	float theta2 = 0.0f;
 	float amplitude = 5.0f;
 
     Player player{
@@ -125,32 +122,60 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		#pragma region enemy
 			///enemy
 			Novice::DrawEllipse(
-				(int)enemy1.pos.x, (int)enemy1.pos.y,
-				enemy1.radius, enemy1.radius, 0,
+				(int)enemyH1.pos.x, (int)enemyH1.pos.y,
+				enemyH1.radius, enemyH1.radius, 0,
 				c1colorW, solid);
 			Novice::DrawEllipse(
-				(int)enemy2.pos.x, (int)enemy2.pos.y,
-				enemy2.radius, enemy2.radius, 0,
+				(int)enemyH2.pos.x, (int)enemyH2.pos.y,
+				enemyH2.radius, enemyH2.radius, 0,
+				c2colorW, solid);
+
+			Novice::DrawEllipse(
+				(int)enemyV1.pos.x, (int)enemyV1.pos.y,
+				enemyV1.radius, enemyV1.radius, 0,
 				c2colorW, solid);
 			Novice::DrawEllipse(
-				(int)enemy3.pos.x, (int)enemy3.pos.y,
-				enemy3.radius, enemy3.radius, 0,
+				(int)enemyV2.pos.x, (int)enemyV2.pos.y,
+				enemyV2.radius, enemyV2.radius, 0,
+				c2colorW, solid);
+			Novice::DrawEllipse(
+				(int)enemyV3.pos.x, (int)enemyV3.pos.y,
+				enemyV3.radius, enemyV3.radius, 0,
+				c2colorW, solid);
+			Novice::DrawEllipse(
+				(int)enemyV4.pos.x, (int)enemyV4.pos.y,
+				enemyV4.radius, enemyV4.radius, 0,
+				c2colorW, solid);
+
+
+			Novice::DrawEllipse(
+				(int)enemyR1.pos.x, (int)enemyR1.pos.y,
+				enemyR1.radius, enemyR1.radius, 0,
 				c3colorW, solid);
 
 			///moving
 			/// sin cos
 			theta += float(M_PI) / 90.0f;
+			theta2 += float(M_PI) / 45.0f;
 
 			///Left Right
-			enemy1.pos.x += cosf(theta) * amplitude;
-			///Up Down
-			enemy2.pos.y += cosf(theta) * amplitude;
-			/// Circle
-			/// Circle
-			enemy3.pos.x += cosf(theta) * amplitude;
-			enemy3.pos.y += sinf(theta) * amplitude;
+			//enemy1.pos.x += cosf(theta) * amplitude;
+			enemyH1.pos.x += cosf(theta) * amplitude;
+			enemyH2.pos.x += cosf(theta) * amplitude;
 
-#pragma endregion
+			///Up Down
+			//enemy2.pos.y += cosf(theta) * amplitude;
+			enemyV1.pos.y += cosf(theta) * amplitude;
+			enemyV2.pos.y -= cosf(theta) * amplitude;
+			enemyV3.pos.y += cosf(theta2) * amplitude;
+			enemyV4.pos.y -= cosf(theta2) * amplitude;
+
+			/// Circle
+			/// Circle
+			enemyR1.pos.x += cosf(theta) * amplitude;
+			enemyR1.pos.y += sinf(theta) * amplitude;
+
+		#pragma endregion
 
          #pragma region Player
 
