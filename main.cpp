@@ -71,10 +71,10 @@ bool isCollision(Vector2 aPos, Vector2 bPos, float aRadius, float bRadius) {
 Vector2 circleEnemy(Vector2 pos, float amplitude, float& theta, float velocity) {
     Vector2 result;
 
-    theta += float(M_PI) / velocity;
+    theta += (float)M_PI / (velocity * 100.0f); 
 
-    result.x = cosf(theta + (float)M_PI) * amplitude + pos.x;
-    result.y = sinf(theta + (float)M_PI) * amplitude + pos.y;
+    result.x = cosf(theta) * amplitude + pos.x;
+    result.y = sinf(theta) * amplitude + pos.y;
 
     return result;
 }
@@ -128,7 +128,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region 敵
 
-    const int maxEnemy = 11;
+    const int maxEnemy = 19;
 
     Enemy enemies[maxEnemy];
     
@@ -279,7 +279,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                
                 if (enemies[i].enemyType == 0) {
                     // 円状に動く敵
-                    enemies[8].pos = circleEnemy({ 640.0f,360.0f }, 200.0f, enemies[i].theta, 300.0f);
+                    enemies[8].pos = circleEnemy({ 640.0f,360.0f }, 200.0f, enemies[8].theta, 3000.0f);
+                    enemies[9].pos = circleEnemy({ 640.0f,360.0f }, 200.0f, enemies[9].theta, 3000.0f);
+                    enemies[10].pos = circleEnemy({ 640.0f,360.0f }, 200.0f, enemies[10].theta, 3000.0f);
+                    enemies[11].pos = circleEnemy({ 640.0f,360.0f }, 200.0f, enemies[11].theta, 3000.0f);
+                    enemies[12].pos = circleEnemy({ 640.0f,360.0f }, 200.0f, enemies[12].theta, 3000.0f);
+                    enemies[13].pos = circleEnemy({ 640.0f,360.0f }, 200.0f, enemies[13].theta, 3000.0f);
+                    enemies[14].pos = circleEnemy({ 640.0f,360.0f }, 200.0f, enemies[14].theta, 3000.0f);
+                    enemies[15].pos = circleEnemy({ 640.0f,360.0f }, 200.0f, enemies[15].theta, 3000.0f);
 
 
                     enemies[9].pos.x = cosf(enemies[i].theta + (i * 2 * (float)M_PI)) * enemies[i].amplitude + 300.0f;
