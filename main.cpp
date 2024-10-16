@@ -90,10 +90,8 @@ Vector2 verticalEnemy(Vector2 pos, float amplitude, float& theta, float velocity
     return result;
 }
 
-Vector2 horizonEnemy(Vector2 pos,float amplitude, float velocity) {
+Vector2 horizonEnemy(Vector2 pos,float amplitude, float& theta, float velocity) {
     Vector2 result;
-
-    float theta = 0.0f;
 
     theta += float(M_PI) / (velocity * 100.0f);
 
@@ -128,7 +126,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region 敵
 
-    const int maxEnemy = 19;
+    const int maxEnemy = 42;
 
     Enemy enemies[maxEnemy];
     
@@ -137,8 +135,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         enemies[i].enemyType = i % 3; 
         enemies[i].theta = 0.0f;
         enemies[i].amplitude = 150.0f;
-        enemies[i].radius = 25.0f;
+        enemies[i].radius = 40.0f;
     }
+
+    int stage2pos = 1280;
+    int stage3pos = 2560;
+    float moveFast = 10;
+    float moveNormal = 25;
+    float moveSlow = 50;
 
 #pragma endregion
 
@@ -194,7 +198,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         checkPoint.th = Novice::LoadTexture("./Resources/PlayScene/checkpoint.png"),
     };
 
-    Vector2 clearLine = { 1280.0f * 2.0f , 0.0f };
+    Vector2 clearLine = { 1280.0f * 3.0f , 0.0f };
     int clearLineTh = Novice::LoadTexture("./Resources/PlayScene/goalLighting.png");
 
 #pragma endregion
@@ -556,7 +560,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma region カメラ
 
             // カメラをスクロールさせる
-            if (player.pos.x <= (1280.0f / 2.0f) * 3.0f) {
+            if (player.pos.x <= clearLine.x - (1280.0f / 2.0f)) {
                 if (player.pos.x >= 1280.0f / 2.0f) {
                     camera.targetPos.x = player.pos.x - (1280.0f / 2.0f);
                 }
