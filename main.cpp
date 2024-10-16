@@ -194,7 +194,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         checkPoint.th = Novice::LoadTexture("./Resources/PlayScene/checkpoint.png"),
     };
 
-    Vector2 clearLine = { 1350.0f , 0.0f };
+    Vector2 clearLine = { 1280.0f * 2.0f , 0.0f };
 
 #pragma endregion
 
@@ -227,11 +227,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     // XPAD用
     XINPUT_STATE state;
 
+    bool isInput = true;
+
 #pragma endregion
 
     //シェイク
     Vector2 wrand = { 0.0f };
     int randMax = 0;
+
+    int whiteOutAlpha = 0;
 
 //*****************************************************//
 
@@ -317,80 +321,86 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region プレイヤー
 
-            // スティックの入力を取得
-            Novice::GetAnalogInputLeft(0, &leftStickX, &leftStickY);
+            if (isInput) {
 
-            if (std::abs(leftStickX) > 8000 || std::abs(leftStickY) > 8000) {
+                // スティックの入力を取得
+                Novice::GetAnalogInputLeft(0, &leftStickX, &leftStickY);
 
-                float magnitude = std::sqrtf(float(leftStickX * leftStickX + leftStickY * leftStickY));
-                Vector2 direction = {
-                    (float)leftStickX / magnitude,
-                    (float)leftStickY / magnitude
-                };
+                if (std::abs(leftStickX) > 8000 || std::abs(leftStickY) > 8000) {
 
-                // カーソルの位置を計算
-                cursor.pos.x = player.pos.x + direction.x * dashDistance;
-                cursor.pos.y = player.pos.y + direction.y * dashDistance;
+                    float magnitude = std::sqrtf(float(leftStickX * leftStickX + leftStickY * leftStickY));
+                    Vector2 direction = {
+                        (float)leftStickX / magnitude,
+                        (float)leftStickY / magnitude
+                    };
 
-                // ダッシュ
-                if (player.isAlive) {
-                    if (Novice::IsTriggerButton(0, kPadButton10)) {
+                    // カーソルの位置を計算
+                    cursor.pos.x = player.pos.x + direction.x * dashDistance;
+                    cursor.pos.y = player.pos.y + direction.y * dashDistance;
 
-                        // 目標位置を更新
-                        player.targetPos.x = cursor.pos.x;
-                        player.targetPos.y = cursor.pos.y;
+                    // ダッシュ
+                    if (player.isAlive) {
+                        if (Novice::IsTriggerButton(0, kPadButton10)) {
 
-                        // アニメーション更新
-                        player.isAnimation = true;
-                        player.animeCount = 30;
+                            // 目標位置を更新
+                            player.targetPos.x = cursor.pos.x;
+                            player.targetPos.y = cursor.pos.y;
 
-                        // ダッシュ時にパーティクルを生成
-                        for (int j = 0; j < particlesToGenerate; ++j) {
-                            for (int i = 0; i < maxParticles; ++i) {
-                                if (!particles[i].isActive) {
-                                    particles[i].pos = player.pos;
+                            // アニメーション更新
+                            player.isAnimation = true;
+                            player.animeCount = 30;
 
-                                    particles[i].baseAngle = atan2f(player.targetPos.y - player.pos.y, player.targetPos.x - player.pos.x) + ((float)M_PI);
+                            // ダッシュ時にパーティクルを生成
+                            for (int j = 0; j < particlesToGenerate; ++j) {
+                                for (int i = 0; i < maxParticles; ++i) {
+                                    if (!particles[i].isActive) {
+                                        particles[i].pos = player.pos;
 
-                                    particles[i].randomAngle = particles[i].baseAngle + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
+                                        particles[i].baseAngle = atan2f(player.targetPos.y - player.pos.y, player.targetPos.x - player.pos.x) + ((float)M_PI);
 
-                                    particles[i].speed = 5.0f + (rand() % 5);
+                                        particles[i].randomAngle = particles[i].baseAngle + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
 
-                                    particles[i].velocity = { cosf(particles[i].randomAngle) * particles[i].speed, sinf(particles[i].randomAngle) * particles[i].speed };
+                                        particles[i].speed = 5.0f + (rand() % 5);
 
-                                    particles[i].radius = 5.0f;
-                                    particles[i].lifeTime = 60;
-                                    particles[i].isActive = true;
+                                        particles[i].velocity = { cosf(particles[i].randomAngle) * particles[i].speed, sinf(particles[i].randomAngle) * particles[i].speed };
 
-                                    break;
+                                        particles[i].radius = 5.0f;
+                                        particles[i].lifeTime = 60;
+                                        particles[i].isActive = true;
+
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            } else {
+                } else {
 
-                // スティックが戻ったらカーソルをプレイヤーの位置に戻す
-                cursor.pos = player.pos;
+                    // スティックが戻ったらカーソルをプレイヤーの位置に戻す
+                    cursor.pos = player.pos;
+                }
+
             }
 
 #pragma region キーボード
 
-            if (keys[DIK_W]) {
+            if (isInput) {
+                if (keys[DIK_W]) {
 
-                player.targetPos.y -= 10.0f;
-            }
-            if (keys[DIK_S]) {
+                    player.targetPos.y -= 10.0f;
+                }
+                if (keys[DIK_S]) {
 
-                player.targetPos.y += 10.0f;
-            }
-            if (keys[DIK_A]) {
+                    player.targetPos.y += 10.0f;
+                }
+                if (keys[DIK_A]) {
 
-                player.targetPos.x -= 10.0f;
-            }
-            if (keys[DIK_D]) {
+                    player.targetPos.x -= 10.0f;
+                }
+                if (keys[DIK_D]) {
 
-                player.targetPos.x += 10.0f;
+                    player.targetPos.x += 10.0f;
+                }
             }
 #pragma endregion
 
@@ -445,9 +455,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             }
 
             // ****************ゴール
-            if (player.pos.x >= clearLine.x) {
+            if (player.pos.x >= clearLine.x - 60.0f) {
 
+                player.pos = Lerp(player.pos, { clearLine.x + 100.0f,player.pos.y }, 0.1f);
 
+                isInput = false;
+
+                whiteOutAlpha += 2;
+                if (whiteOutAlpha >= 255) {
+
+                    whiteOutAlpha = 255;
+                }
+
+                
             }
 
             // *****************アニメーション
@@ -513,10 +533,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma region カメラ
 
             // カメラをスクロールさせる
-            if (player.pos.x >= 1280.0f / 2.0f) {
-                camera.targetPos.x = player.pos.x - (1280.0f / 2.0f);
+            if (player.pos.x <= (1280.0f / 2.0f) * 3.0f) {
+                if (player.pos.x >= 1280.0f / 2.0f) {
+                    camera.targetPos.x = player.pos.x - (1280.0f / 2.0f);
+                }
             }
-            
+
             // プレイヤーが初期座標の半分以下に来たらカメラをデフォルトに戻す
             if (player.pos.x <= 1280.0f / 2.0f){
                 camera.targetPos.x = 0.0f;
@@ -632,6 +654,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     Novice::DrawSprite((int)particles[i].pos.x - (int)particles[i].radius - (int)camera.pos.x, (int)particles[i].pos.y - (int)particles[i].radius - (int)camera.pos.y, particlesTh, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF);
                 }
             }
+
+            //*********************:ホワイト
+            Novice::DrawBox(0, 0, 1280, 720, 0.0f, GetColor(255, 255, 255, whiteOutAlpha), kFillModeSolid);
             
             //************************デバッグ用
             Novice::ScreenPrintf(0, 20, "PlayerPosX : %.2f", player.pos.x);
