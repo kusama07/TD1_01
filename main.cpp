@@ -135,7 +135,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		enemies[i].radius = 25.0f;
 	}
 
-	int stage2pos = 1280;
+	//int stage2pos = 1280;
 	int stage3pos = 2560;
 
 #pragma endregion
@@ -277,12 +277,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					enemies[5].pos = circleEnemy({ 800.0f, 540.0f }, 150.0f, enemies[i].theta, 300);
 					enemies[6].pos = circleEnemy({ 960.0f, 360.0f }, 150.0f, enemies[i].theta, 300);
 					///ステージ２
-					enemies[15].pos = circleEnemy({ stage2pos+640.0f , 360.0f }, 100.0f, enemies[i].theta, 300);
-					enemies[16].pos = circleEnemy({ stage2pos+640.0f , 360.0f }, 200.0f, enemies[i].theta, 300);
-					enemies[17].pos = circleEnemy({ stage2pos+640.0f , 360.0f }, 300.0f, enemies[i].theta, 300);
-					enemies[18].pos = circleEnemy({ stage2pos+640.0f , 360.0f }, 400.0f, enemies[i].theta, 300);
-					enemies[19].pos = circleEnemy({ stage2pos+640.0f , 360.0f }, 500.0f, enemies[i].theta, 300);
-					enemies[20].pos = circleEnemy({ stage2pos+640.0f , 360.0f }, 600.0f, enemies[i].theta, 300);
+					enemies[15].pos = circleEnemy({ 640.0f , 360.0f }, 100.0f, enemies[i].theta, 300);
+					enemies[16].pos = circleEnemy({ 640.0f , 360.0f }, 200.0f, enemies[i].theta, 300);
+					enemies[17].pos = circleEnemy({ 640.0f , 360.0f }, 300.0f, enemies[i].theta, 300);
+					enemies[18].pos = circleEnemy({ 640.0f , 360.0f }, 400.0f, enemies[i].theta, 300);
+					enemies[19].pos = circleEnemy({ 640.0f , 360.0f }, 500.0f, enemies[i].theta, 300);
+					enemies[20].pos = circleEnemy({ 640.0f , 360.0f }, 600.0f, enemies[i].theta, 300);
 
 				}
 				else if (enemies[i].enemyType == 1) {
