@@ -80,7 +80,7 @@ Vector2 circleEnemy(Vector2 pos, float amplitude, float &theta, float velocity) 
 Vector2 verticalEnemy(Vector2 pos, float amplitude, float &theta, float velocity) {
 	Vector2 result;
 
-	theta += float(M_PI) / velocity; ///
+	theta += float(M_PI) / (velocity * 100.0f);
 
 	result.x = pos.x;
 	result.y = sinf(theta) * amplitude + pos.y;
@@ -91,7 +91,7 @@ Vector2 verticalEnemy(Vector2 pos, float amplitude, float &theta, float velocity
 Vector2 horizonEnemy(Vector2 pos, float amplitude, float &theta, float velocity) {
 	Vector2 result;
 
-	theta += float(M_PI) / velocity; ///
+	theta += float(M_PI) / (velocity * 100.0f);
 
 	result.x = sinf(theta) * amplitude + pos.x;
 	result.y = pos.y;
@@ -160,11 +160,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		enemies[i].enemyType = i % 3;
 		enemies[i].theta = 0.0f;
 		enemies[i].amplitude = 150.0f;
-		enemies[i].radius = 25.0f;
+		enemies[i].radius = 40.0f;
 	}
 
 	int stage2pos = 1280;
 	int stage3pos = 2560;
+	float moveFast = 10;
+	float moveNormal = 25;
+	float moveSlow = 50;
 
 #pragma endregion
 
@@ -297,61 +300,61 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (enemies[i].enemyType == 0) {
 					// 円状に動く敵
 					///ステージ１
-					enemies[0].pos = circleEnemy({ 320.0f, 0.0f }, 150.0f, enemies[0].theta, 300);
-					enemies[1].pos = circleEnemy({ 640.0f, 180.0f }, 150.0f, enemies[1].theta, 300);
-					enemies[2].pos = circleEnemy({ 960.0f, 0.0f }, 150.0f, enemies[2].theta, 300);
-					enemies[3].pos = circleEnemy({ 150.0f, 360.0f }, 150.0f, enemies[3].theta, 300);
-					enemies[4].pos = circleEnemy({ 480.0f, 540.0f }, 150.0f, enemies[4].theta, 300);
-					enemies[5].pos = circleEnemy({ 800.0f, 540.0f }, 150.0f, enemies[5].theta, 300);
-					enemies[6].pos = circleEnemy({ 960.0f, 360.0f }, 150.0f, enemies[6].theta, 300);
+					enemies[0].pos = circleEnemy({ 320.0f, 0.0f }, 150.0f, enemies[0].theta, moveNormal);
+					enemies[1].pos = circleEnemy({ 640.0f, 180.0f }, 150.0f, enemies[1].theta, moveNormal);
+					enemies[2].pos = circleEnemy({ 960.0f, 0.0f }, 150.0f, enemies[2].theta, moveNormal); /// need fix
+					enemies[3].pos = circleEnemy({ 150.0f, 360.0f }, 150.0f, enemies[3].theta, moveNormal);
+					enemies[4].pos = circleEnemy({ 480.0f, 540.0f }, 150.0f, enemies[4].theta, moveNormal);
+					enemies[5].pos = circleEnemy({ 800.0f, 540.0f }, 150.0f, enemies[5].theta, moveNormal); /// need fix
+					enemies[6].pos = circleEnemy({ 960.0f, 360.0f }, 150.0f, enemies[6].theta, moveNormal);
 					///ステージ２
-					enemies[15].pos = circleEnemy({ stage2pos + 640.0f , 360.0f }, 100.0f, enemies[15].theta, -3000); ///inner
-					enemies[16].pos = circleEnemy({ stage2pos + 640.0f , 360.0f }, 200.0f, enemies[16].theta, 3000);
-					enemies[17].pos = circleEnemy({ stage2pos + 640.0f , 360.0f }, 300.0f, enemies[17].theta, -3000);
-					enemies[18].pos = circleEnemy({ stage2pos + 640.0f , 360.0f }, 400.0f, enemies[18].theta, 3000);
-					enemies[19].pos = circleEnemy({ stage2pos + 640.0f , 360.0f }, 500.0f, enemies[19].theta, -3000);
-					enemies[20].pos = circleEnemy({ stage2pos + 640.0f , 360.0f }, 600.0f, enemies[20].theta, 3000); ///outer
+					enemies[15].pos = circleEnemy({ stage2pos + 640.0f , 360.0f }, 100.0f, enemies[15].theta, -moveNormal); ///inner
+					enemies[16].pos = circleEnemy({ stage2pos + 640.0f , 360.0f }, 200.0f, enemies[16].theta, moveNormal);
+					enemies[17].pos = circleEnemy({ stage2pos + 640.0f , 360.0f }, 300.0f, enemies[17].theta, -moveNormal);
+					enemies[18].pos = circleEnemy({ stage2pos + 640.0f , 360.0f }, 400.0f, enemies[18].theta, moveNormal);
+					enemies[19].pos = circleEnemy({ stage2pos + 640.0f , 360.0f }, 500.0f, enemies[19].theta, -moveNormal);
+					enemies[20].pos = circleEnemy({ stage2pos + 640.0f , 360.0f }, 600.0f, enemies[20].theta, moveNormal); ///outer
 
 				}
 				else if (enemies[i].enemyType == 1) {
 					// 縦方向に往復する敵
 					///ステージ１
-					enemies[7].pos = verticalEnemy({ 480.0f, 360.0f }, 150.0f, enemies[7].theta, 300);
-					enemies[8].pos = verticalEnemy({ 640.0f, 360.0f }, 150.0f, enemies[8].theta, 300);
+					enemies[7].pos = verticalEnemy({ 480.0f, 360.0f }, 150.0f, enemies[7].theta, moveSlow);
+					enemies[8].pos = verticalEnemy({ 640.0f, 360.0f }, 150.0f, enemies[8].theta, moveSlow);
 					///ステージ３
-					enemies[21].pos = verticalEnemy({ stage3pos + 160.0f, 180.0f }, 150.0f, enemies[21].theta, 600);
-					enemies[22].pos = verticalEnemy({ stage3pos + 640.0f, 180.0f }, 150.0f, enemies[22].theta, 600);
-					enemies[23].pos = verticalEnemy({ stage3pos + 800.0f, 180.0f }, 150.0f, enemies[23].theta, 600);
-					enemies[24].pos = verticalEnemy({ stage3pos + 960.0f, 180.0f }, 150.0f, enemies[24].theta, 600); ///up
-					enemies[25].pos = verticalEnemy({ stage3pos + 80.0f, 360.0f }, 150.0f, enemies[25].theta, 600);
-					enemies[26].pos = verticalEnemy({ stage3pos + 80.0f, 630.0f }, 100.0f, enemies[26].theta, 600);
-					enemies[27].pos = verticalEnemy({ stage3pos + 160.0f, 540.0f }, 150.0f, enemies[27].theta, 600); ///down
-					enemies[28].pos = verticalEnemy({ stage3pos + 320.0f, 540.0f }, 150.0f, enemies[28].theta, 600);
-					enemies[29].pos = verticalEnemy({ stage3pos + 480.0f, 540.0f }, 150.0f, enemies[29].theta, 600);
-					enemies[30].pos = verticalEnemy({ stage3pos + 640.0f, 540.0f }, 150.0f, enemies[30].theta, 600);
-					enemies[31].pos = verticalEnemy({ stage3pos + 800.0f, 540.0f }, 150.0f, enemies[31].theta, 600);
-					enemies[32].pos = verticalEnemy({ stage3pos + 880.0f, 400.0f }, 150.0f, enemies[32].theta, 600);
-					enemies[33].pos = verticalEnemy({ stage3pos + 960.0f, 400.0f }, 150.0f, enemies[33].theta, 600);
+					enemies[21].pos = verticalEnemy({ stage3pos + 160.0f, 180.0f }, 150.0f, enemies[21].theta, moveNormal);
+					enemies[22].pos = verticalEnemy({ stage3pos + 640.0f, 180.0f }, 150.0f, enemies[22].theta, moveNormal);
+					enemies[23].pos = verticalEnemy({ stage3pos + 800.0f, 180.0f }, 150.0f, enemies[23].theta, moveNormal);
+					enemies[24].pos = verticalEnemy({ stage3pos + 960.0f, 180.0f }, 150.0f, enemies[24].theta, moveNormal); ///up
+					enemies[25].pos = verticalEnemy({ stage3pos + 80.0f, 360.0f }, 150.0f, enemies[25].theta, moveNormal);
+					enemies[26].pos = verticalEnemy({ stage3pos + 80.0f, 630.0f }, 100.0f, enemies[26].theta, moveNormal);
+					enemies[27].pos = verticalEnemy({ stage3pos + 160.0f, 540.0f }, 150.0f, enemies[27].theta, moveNormal); ///down
+					enemies[28].pos = verticalEnemy({ stage3pos + 320.0f, 540.0f }, 150.0f, enemies[28].theta, moveNormal);
+					enemies[29].pos = verticalEnemy({ stage3pos + 480.0f, 540.0f }, 150.0f, enemies[29].theta, moveNormal);
+					enemies[30].pos = verticalEnemy({ stage3pos + 640.0f, 540.0f }, 150.0f, enemies[30].theta, moveNormal);
+					enemies[31].pos = verticalEnemy({ stage3pos + 800.0f, 540.0f }, 150.0f, enemies[31].theta, moveNormal);
+					enemies[32].pos = verticalEnemy({ stage3pos + 880.0f, 400.0f }, 150.0f, enemies[32].theta, moveNormal);
+					enemies[33].pos = verticalEnemy({ stage3pos + 960.0f, 400.0f }, 150.0f, enemies[33].theta, moveNormal);
 
 				}
 				else if (enemies[i].enemyType == 2) {
 					// 横方向に往復する敵
 					/// ステージ１
-					enemies[9].pos = horizonEnemy({ 160.0f,0.0f }, 150.0f, enemies[i].theta, 300);
-					enemies[10].pos = horizonEnemy({ 1120.0f,0.0f }, 150.0f, enemies[i].theta, 300);
-					enemies[11].pos = horizonEnemy({ 960.0f,160.0f }, 300.0f, enemies[i].theta, 300);
-					enemies[12].pos = horizonEnemy({ 960.0f,540.0f }, 300.0f, enemies[i].theta, 300);
-					enemies[13].pos = horizonEnemy({ 160.0f,1280.0f }, 300.0f, enemies[i].theta, 300);
-					enemies[14].pos = horizonEnemy({ 1120.0f,1280.0f }, 300.0f, enemies[i].theta, 300);
+					enemies[9].pos = horizonEnemy({ 160.0f,0.0f }, 150.0f, enemies[9].theta, moveSlow);
+					enemies[10].pos = horizonEnemy({ 1120.0f,0.0f }, 150.0f, enemies[10].theta, moveSlow);
+					enemies[11].pos = horizonEnemy({ 960.0f,160.0f }, 300.0f, enemies[11].theta, moveSlow);
+					enemies[12].pos = horizonEnemy({ 960.0f,540.0f }, 300.0f, enemies[12].theta, moveSlow);
+					enemies[13].pos = horizonEnemy({ 160.0f,1280.0f }, 300.0f, enemies[13].theta, moveSlow);
+					enemies[14].pos = horizonEnemy({ 1120.0f,1280.0f }, 300.0f, enemies[14].theta, moveSlow);
 					/// ステージ３
-					enemies[34].pos = horizonEnemy({ stage3pos + 480.0f, 180.0f }, 500.0f, enemies[i].theta, 600); /// first purple line << add 6 more
-					enemies[35].pos = horizonEnemy({ stage3pos + 640.0f, 270.0f }, 350.0f, enemies[i].theta, 600); /// second  << add 1 more 
-					enemies[36].pos = horizonEnemy({ stage3pos + 160.0f, 270.0f }, 150.0f, enemies[i].theta, 600); /// second right side << add 3 more
-					enemies[37].pos = horizonEnemy({ stage3pos + 480.0f, 450.0f }, 150.0f, enemies[i].theta, 600); /// third line << add 6 more
-					enemies[38].pos = horizonEnemy({ stage3pos + 480.0f, 540.0f }, 150.0f, enemies[i].theta, 600); /// forth line << add 6 more
-					enemies[39].pos = horizonEnemy({ stage3pos + 1120.0f, 180.0f }, 150.0f, enemies[i].theta, 600); /// right one 1 
-					enemies[40].pos = horizonEnemy({ stage3pos + 1120.0f, 360.0f }, 150.0f, enemies[i].theta, 600); /// right one 2
-					enemies[41].pos = horizonEnemy({ stage3pos + 1120.0f, 540.0f }, 150.0f, enemies[i].theta, 600); /// right one 3
+					enemies[34].pos = horizonEnemy({ stage3pos + 480.0f, 180.0f }, 500.0f, enemies[34].theta, moveNormal); /// first purple line << add 6 more
+					enemies[35].pos = horizonEnemy({ stage3pos + 640.0f, 270.0f }, 350.0f, enemies[35].theta, moveFast); /// second  << add 1 more 
+					enemies[36].pos = horizonEnemy({ stage3pos + 160.0f, 270.0f }, 150.0f, enemies[36].theta, moveNormal); /// second right side << add 3 more
+					enemies[37].pos = horizonEnemy({ stage3pos + 480.0f, 450.0f }, 150.0f, enemies[37].theta, moveNormal); /// third line << add 6 more
+					enemies[38].pos = horizonEnemy({ stage3pos + 480.0f, 540.0f }, 150.0f, enemies[38].theta, moveNormal); /// forth line << add 6 more
+					enemies[39].pos = horizonEnemy({ stage3pos + 1120.0f, 180.0f }, 150.0f, enemies[39].theta, moveFast); /// right one 1 
+					enemies[40].pos = horizonEnemy({ stage3pos + 1120.0f, 360.0f }, 150.0f, enemies[40].theta, moveFast); /// right one 2
+					enemies[41].pos = horizonEnemy({ stage3pos + 1120.0f, 540.0f }, 150.0f, enemies[41].theta, moveFast); /// right one 3
 
 
 				}
