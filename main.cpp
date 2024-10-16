@@ -195,6 +195,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     };
 
     Vector2 clearLine = { 1280.0f * 2.0f , 0.0f };
+    int clearLineTh = Novice::LoadTexture("./Resources/PlayScene/goalLighting.png");
 
 #pragma endregion
 
@@ -599,6 +600,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             Novice::DrawBox(0 - (int)camera.pos.x, 0 - (int)camera.pos.y,
                 1280, 720, 0.0f, BLACK, kFillModeSolid);
 
+            Novice::DrawSprite(((int)clearLine.x - 300) - (int)camera.pos.x, 0 - (int)camera.pos.y, clearLineTh, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF);
+
             //*********************チェックポイント
             Novice::DrawSprite(((int)checkPoint.pos.x - 105) - (int)camera.pos.x, 0, checkPoint.th, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF);
 
@@ -611,7 +614,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             }
 
             //*************************カーソルの描画
-            if (player.isAlive) {
+            if (player.isAlive && isInput) {
 
                 Novice::DrawSprite(((int)cursor.pos.x - 10) - (int)camera.pos.x, ((int)cursor.pos.y - 10) - (int)camera.pos.y,
                     cursor.th, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF
