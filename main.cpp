@@ -61,6 +61,11 @@ struct CheckPoint {
     int th;
 };
 
+struct BackGround {
+    Vector2 pos;
+    int th;
+};
+
 bool isCollision(Vector2 aPos, Vector2 bPos, float aRadius, float bRadius) {
     float dx = aPos.x - bPos.x;
     float dy = aPos.y - bPos.y;
@@ -165,7 +170,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     };
 
     // 高速移動速度
-    const float dashDistance = 300.0f;
+    const float dashDistance = 280.0f;
 
 #pragma endregion 
 
@@ -242,8 +247,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
     int whiteOutAlpha = 0;
 
-//*****************************************************//
+    enemies[0].theta = 0.0f;
+    enemies[1].theta = (float)M_PI / 4.0f;
 
+//*****************************************************//
 
     // ウィンドウの×ボタンが押されるまでループ
     while (Novice::ProcessMessage() == 0) {
@@ -302,7 +309,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
                 } else if (enemies[i].enemyType == 1) {
                     // 縦方向に往復する敵
-                    ///ステージ１
+                
                     enemies[7].pos = verticalEnemy({ 480.0f, 360.0f }, 150.0f, enemies[7].theta, moveSlow);
                     enemies[8].pos = verticalEnemy({ 640.0f, 360.0f }, 150.0f, enemies[8].theta, moveSlow);
                     ///ステージ３
