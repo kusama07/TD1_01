@@ -143,8 +143,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         enemies[i].radius = 40.0f;
     }
 
+    Enemy enemiesBig[maxEnemy];
+
+    for (int i = 0; i < maxEnemy; i++) {
+        enemiesBig[i].pos = { 800.0f, 360.0f };
+        enemiesBig[i].enemyType = i % 3;
+        enemiesBig[i].theta = 0;
+        enemiesBig[i].amplitude = 150.0f;
+        enemiesBig[i].radius = 60.0f;
+    }
+
     int stage2pos = 1280;
     int stage3pos = 2560;
+    int stage4pos = 3840;
     float moveFast = 10;
     float moveNormal = 25;
     float moveSlow = 50;
