@@ -214,7 +214,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         player.th = Novice::LoadTexture("./Resources/PlayScene/player.png"),
         player.screenPosX = 180,
         player.isAnimation = false,
-        player.animeCount = 60,
+        player.animeCount = 0,
     };
 
     // 高速移動速度
