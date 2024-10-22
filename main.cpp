@@ -648,8 +648,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     enemies[21].pos = circleEnemy({ stage3pos + 710.0f, 80.0f }, 160.0f, enemies[21].theta, moveNormal);
                     enemies[22].pos = circleEnemy({ stage3pos + 710.0f, 360.0f }, 160.0f, enemies[22].theta, -moveNormal);
                     enemies[23].pos = circleEnemy({ stage3pos + 710.0f, 640.0f }, 160.0f, enemies[23].theta, moveNormal);
-                    enemies[24].pos = circleEnemy({ stage3pos + 990.0f, 640.0f }, 160.0f, enemies[24].theta, -moveNormal);
-                    enemies[25].pos = circleEnemy({ stage3pos + 990.0f, 360.0f }, 160.0f, enemies[25].theta, moveNormal);
+                    //enemies[24].pos = circleEnemy({ stage3pos + 990.0f, 640.0f }, 160.0f, enemies[24].theta, -moveNormal);
+                    //enemies[25].pos = circleEnemy({ stage3pos + 990.0f, 360.0f }, 160.0f, enemies[25].theta, moveNormal);
 
                     enemies[26].pos = circleEnemy({ stage3pos + 300.0f, 640.0f }, 160.0f, enemies[26].theta, moveNormal);
                     enemies[27].pos = circleEnemy({ stage3pos + 150.0f, 80.0f }, 160.0f, enemies[27].theta, moveNormal);
@@ -676,19 +676,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     enemies[36].pos = circleEnemy({ stage4pos + 830.0f, 360.0f }, 140.0f, enemies[36].theta, moveSlow);
                     enemies[37].pos = circleEnemy({ stage4pos + 550.0f, 360.0f }, 140.0f, enemies[37].theta, -moveNormal);
                     enemies[38].pos = circleEnemy({ stage4pos + 550.0f, 640.0f }, 140.0f, enemies[38].theta, moveSlow);
-                    enemies[39].pos = circleEnemy({ stage4pos + 830.0f, 640.0f }, 140.0f, enemies[39].theta, -moveNormal);
+                    //enemies[39].pos = circleEnemy({ stage4pos + 830.0f, 640.0f }, 140.0f, enemies[39].theta, -moveNormal);
                     enemies[40].pos = circleEnemy({ stage4pos + 1100.0f, 640.0f }, 140.0f, enemies[40].theta, moveSlow);
-                    enemies[41].pos = circleEnemy({ stage4pos + 1390.0f, 640.0f }, 140.0f, enemies[41].theta, -moveNormal);
+                    //enemies[41].pos = circleEnemy({ stage4pos + 1390.0f, 640.0f }, 140.0f, enemies[41].theta, -moveNormal);
 
-                    enemies[42].pos = circleEnemy({ stage4pos + 690.0f, 500.0f }, 280.0f, enemies[42].theta, moveSlow); /// the big circular
-                    enemies[43].pos = circleEnemy({ stage4pos + 970.0f, 500.0f }, 280.0f, enemies[43].theta, -moveSlow); /// the big circular
-                    enemies[44].pos = circleEnemy({ stage4pos + 1250.0f, 500.0f }, 280.0f, enemies[44].theta, moveSlow); /// the big circular
+                    //enemies[42].pos = circleEnemy({ stage4pos + 690.0f, 500.0f }, 280.0f, enemies[42].theta, moveSlow); /// the big circular
+                    //enemies[43].pos = circleEnemy({ stage4pos + 970.0f, 500.0f }, 280.0f, enemies[43].theta, -moveSlow); /// the big circular
+                    //enemies[44].pos = circleEnemy({ stage4pos + 1250.0f, 500.0f }, 280.0f, enemies[44].theta, moveSlow); /// the big circular
                     //enemies[45].pos = circleEnemy({ stage3pos + 1530.0f, 500.0f }, 280.0f, enemies[45].theta, -moveSlow); /// the big circular
 
                     //enemies[46].pos = circleEnemy({ stage3pos + 690.0f, 780.0f }, 280.0f, enemies[46].theta, -moveSlow); /// the big circular
-                    enemies[47].pos = circleEnemy({ stage4pos + 970.0f, 780.0f }, 280.0f, enemies[47].theta, -moveSlow); /// the big circular
+                    //enemies[47].pos = circleEnemy({ stage4pos + 970.0f, 780.0f }, 280.0f, enemies[47].theta, -moveSlow); /// the big circular
                     enemies[48].pos = circleEnemy({ stage4pos + 1250.0f, 780.0f }, 280.0f, enemies[48].theta, moveSlow); /// the big circular
-                    enemies[49].pos = circleEnemy({ stage4pos + 1530.0f, 780.0f }, 280.0f, enemies[49].theta, -moveSlow); /// the big circular
+                    //enemies[49].pos = circleEnemy({ stage4pos + 1530.0f, 780.0f }, 280.0f, enemies[49].theta, -moveSlow); /// the big circular
 
 
                     /*enemies[32].pos = circleEnemy({ 960.0f, 0.0f }, 150.0f, enemies[32].theta, moveNormal);
