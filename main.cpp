@@ -121,14 +121,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     // キー入力結果を受け取る箱
     char keys[256] = { 0 };
     char preKeys[256] = { 0 };
-
-	enum Scene {
-		START,
-		PLAY,
-		CLEAR,
-		END
-
-	}scene = CLEAR;
 //************************* 宣言 *************************//
 
 #pragma region タイトル用の変数
@@ -160,7 +152,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         CLEAR,
         END
 
-    }scene = PLAY;
+    }scene = START;
 
 #pragma endregion
 
@@ -345,12 +337,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     frontmostBg[1].th = Novice::LoadTexture("./Resources/PlayScene/background3_2.png");
     frontmostBg[2].th = Novice::LoadTexture("./Resources/PlayScene/background3_3.png");
 
-//*****************************************************//
-
-    // ウィンドウの×ボタンが押されるまでループ
-    while (Novice::ProcessMessage() == 0) {
-        // フレームの開始
-        Novice::BeginFrame();
+    
 	int clearTimer = 0;
 	int clearFadeInOut = 255;
 	unsigned int clearColor = WHITE;
