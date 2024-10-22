@@ -169,6 +169,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         enemies[i].theta = 0;
         enemies[i].amplitude = 150.0f;
         enemies[i].radius = 40.0f;
+        enemies[i].screenPosX = 0;
         enemies[i].animeCount = rand() % 60;
     }
 
@@ -180,6 +181,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         enemiesBig[i].theta = 0;
         enemiesBig[i].amplitude = 150.0f;
         enemiesBig[i].radius = 60.0f;
+        enemiesBig[i].screenPosX = 0;
         enemiesBig[i].animeCount = rand() % 60;
     }
 
@@ -402,7 +404,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     int gameBGM = Novice::LoadAudio("./Resources/Sound/game.mp3");
     int damageSound = Novice::LoadAudio("./Resources/Sound/damage.mp3");
     int dashSound = Novice::LoadAudio("./Resources/Sound/dash.mp3");
-    int chackPointSound = Novice::LoadAudio("./Resources/Sound/chackPoint.mp3");
+    //int chackPointSound = Novice::LoadAudio("./Resources/Sound/chackPoint.mp3");
     int startSound = Novice::LoadAudio("./Resources/Sound/start.mp3");
     int gameClearSound = Novice::LoadAudio("./Resources/Sound/gameClear.mp3");
     int clearBGM = Novice::LoadAudio("./Resources/Sound/clear.mp3");
@@ -1187,39 +1189,39 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region 当たり判定
 
-            for (int i = 0; i < maxEnemy; i++) {
-                if (isCollision(player.pos, enemies[i].pos, player.radius, enemies[i].radius)
-                    || isCollision(player.pos, enemiesBig[i].pos, player.radius, enemiesBig[i].radius)) {
+            //for (int i = 0; i < maxEnemy; i++) {
+            //    if (isCollision(player.pos, enemies[i].pos, player.radius, enemies[i].radius)
+            //        || isCollision(player.pos, enemiesBig[i].pos, player.radius, enemiesBig[i].radius)) {
 
-                    player.isAlive = false;
-                    //効果音
-                    Novice::PlayAudio(chackPointSound, false, 0.9f);
-                    // シェイク
-                    randMax = 20;
+            //        player.isAlive = false;
+            //        //効果音
+            //        Novice::PlayAudio(chackPointSound, false, 0.9f);
+            //        // シェイク
+            //        randMax = 20;
 
-                    for (int j = 0; j < particlesToGenerate; ++j) {
-                        for (int l = 0; l < maxParticles; ++l) {
-                            if (!particles[l].isActive) {
-                                particles[l].pos = player.pos;
+            //        for (int j = 0; j < particlesToGenerate; ++j) {
+            //            for (int l = 0; l < maxParticles; ++l) {
+            //                if (!particles[l].isActive) {
+            //                    particles[l].pos = player.pos;
 
-                                particles[i].randomAngle1 = ((rand() % 360) * (float)M_PI / 180.0f);
+            //                    particles[i].randomAngle1 = ((rand() % 360) * (float)M_PI / 180.0f);
 
-                                particles[l].randomAngle = (rand() % 10 - 1) + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
+            //                    particles[l].randomAngle = (rand() % 10 - 1) + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
 
-                                particles[l].speed = 5.0f + (rand() % 5);
+            //                    particles[l].speed = 5.0f + (rand() % 5);
 
-                                particles[l].velocity = { cosf(particles[l].randomAngle) * particles[l].speed, sinf(particles[l].randomAngle) * particles[l].speed };
+            //                    particles[l].velocity = { cosf(particles[l].randomAngle) * particles[l].speed, sinf(particles[l].randomAngle) * particles[l].speed };
 
-                                particles[l].radius = 5.0f;
-                                particles[l].lifeTime = 60;
-                                particles[l].isActive = true;
+            //                    particles[l].radius = 5.0f;
+            //                    particles[l].lifeTime = 60;
+            //                    particles[l].isActive = true;
 
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+            //                    break;
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
 
 #pragma endregion
 
