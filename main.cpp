@@ -444,10 +444,29 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                 }
             }
 
+            // 初期化
+            player.pos = { 150.0f, 360.0f };
+            
+            playSceneBlackOut = 255;
+            whiteOutAlpha = 0;
+            player.isAnimation = false;
+            // カーソル初期化
+            cursor.pos = player.pos;
+            player.targetPos = { 150.0f, 360.0f };
 
+            // プレイヤーの位置
+            player.pos = player.targetPos;
 
+            // カメラの位置
+            camera.pos = { 0.0f };
+            camera.targetPos.x = player.pos.x - 120.0f;
 
+            player.animeCount = 0;
+            player.screenPosX = 0;
 
+            for (int i = 0; i < MaxCheckPoint;i++) {
+                checkPoint[i].isAction = false;
+            }
 #pragma endregion
 
 #pragma region 描画処理
@@ -1038,40 +1057,40 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma endregion
 
-#pragma region 当たり判定
-
-            for (int i = 0; i < maxEnemy; i++) {
-                if (isCollision(player.pos, enemies[i].pos, player.radius, enemies[i].radius)
-                    || isCollision(player.pos, enemiesBig[i].pos, player.radius, enemiesBig[i].radius)) {
-
-                    player.isAlive = false;
-
-                    // シェイク
-                    randMax = 20;
-
-                    for (int j = 0; j < particlesToGenerate; ++j) {
-                        for (int l = 0; l < maxParticles; ++l) {
-                            if (!particles[l].isActive) {
-                                particles[l].pos = player.pos;
-
-                                particles[l].randomAngle = (rand() % 10 - 1) + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
-
-                                particles[l].speed = 5.0f + (rand() % 5);
-
-                                particles[l].velocity = { cosf(particles[l].randomAngle) * particles[l].speed, sinf(particles[l].randomAngle) * particles[l].speed };
-
-                                particles[l].radius = 5.0f;
-                                particles[l].lifeTime = 60;
-                                particles[l].isActive = true;
-
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-#pragma endregion
+//#pragma region 当たり判定
+//
+//            for (int i = 0; i < maxEnemy; i++) {
+//                if (isCollision(player.pos, enemies[i].pos, player.radius, enemies[i].radius)
+//                    || isCollision(player.pos, enemiesBig[i].pos, player.radius, enemiesBig[i].radius)) {
+//
+//                    player.isAlive = false;
+//
+//                    // シェイク
+//                    randMax = 20;
+//
+//                    for (int j = 0; j < particlesToGenerate; ++j) {
+//                        for (int l = 0; l < maxParticles; ++l) {
+//                            if (!particles[l].isActive) {
+//                                particles[l].pos = player.pos;
+//
+//                                particles[l].randomAngle = (rand() % 10 - 1) + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
+//
+//                                particles[l].speed = 5.0f + (rand() % 5);
+//
+//                                particles[l].velocity = { cosf(particles[l].randomAngle) * particles[l].speed, sinf(particles[l].randomAngle) * particles[l].speed };
+//
+//                                particles[l].radius = 5.0f;
+//                                particles[l].lifeTime = 60;
+//                                particles[l].isActive = true;
+//
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//
+//#pragma endregion
 
 #pragma region 描画
 
@@ -1377,8 +1396,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		case END:
 			break;
 		}
-
-        Novice::ScreenPrintf(0, 0, "%.1f",cursor.pos.x);
 
         /// ↑描画処理ここまで
         ///
