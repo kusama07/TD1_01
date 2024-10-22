@@ -359,6 +359,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int clearLogo = Novice::LoadTexture("./Resources/Images/clearLogo.png");
 #pragma endregion
 
+#pragma region 音
+    int titleBGM = Novice::LoadAudio("./Resources/Sound/title.mp3");
+    int gameBGM2 = Novice::LoadAudio("./Resources/Sound/game2.mp3");
+    int gameBGM = Novice::LoadAudio("./Resources/Sound/game.mp3");
+    int damageSound = Novice::LoadAudio("./Resources/Sound/damage.mp3");
+    int dashSound = Novice::LoadAudio("./Resources/Sound/dash.mp3");
+    int chackPointSound = Novice::LoadAudio("./Resources/Sound/chackPoint.mp3");
+    int startSound = Novice::LoadAudio("./Resources/Sound/start.mp3");
+    int gameClearSound = Novice::LoadAudio("./Resources/Sound/gameClear.mp3");
+    int clearBGM = Novice::LoadAudio("./Resources/Sound/clear.mp3");
+    int clearBGM2 = Novice::LoadAudio("./Resources/Sound/clearSound.mp3");
+    int clearGrith = Novice::LoadAudio("./Resources/Sound/clearGrith.mp3");
+    int clearGrithPlay = -1;
+    int titlePlay = -1;
+    int gamePlayBGM = -1;
+    int gamePlayBGM2 = -1;
+    int clearPlay = -1;
+    int clearPlay2 = -1;
+    int gameClearPlay = -1;
+    float gameVolume = 0.3f;
+#pragma endregion
 
 
 	// ウィンドウの×ボタンが押されるまでループ
@@ -382,10 +403,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             //タイトル画面用のタイマーを加算
             titleTimer++;
 
+            //音楽を流す
+            if (!Novice::IsPlayingAudio(titlePlay) || titlePlay == -1) {
+                //Novice::StopAudio(openingPlay);
+                titlePlay = Novice::PlayAudio(titleBGM, true, gameVolume);
+            }
 
             //ボタンが押されたか
             if (gameIsStart) {
                 titleFadeTimer++;
+                //音量調節
+                Novice::SetAudioVolume(titlePlay, gameVolume);
+                if (gameVolume > 0.0f) {
+                    gameVolume -= 0.005f;
+                }
                 //タイトルロゴのアニメーション
                 if (titleFadeTimer % 5 == 0) {
                     titleLogoCutX += 1280;
@@ -404,7 +435,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     titleFadeTimer = 0;
                     gameIsStart = false;
                     titleTimer = 0;
-
+                    gameVolume = 0.3f;
+                    Novice::StopAudio(titlePlay);
                     //ゲーム画面へ
                     scene = PLAY;
                 }
@@ -426,6 +458,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     for (int i = 0; i < 256; i++) {
                         if (keys[i] && preKeys[i] == 0) {
                             gameIsStart = true;
+                            //効果音
+                            Novice::PlayAudio(startSound, false, 0.7f);
                         }
                     }
 
@@ -437,6 +471,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                         Novice::IsTriggerButton(0, kPadButton8) || Novice::IsTriggerButton(0, kPadButton9) ||
                         Novice::IsTriggerButton(0, kPadButton10) || Novice::IsTriggerButton(0, kPadButton11)) {
                         gameIsStart = true;
+                        //効果音
+                        Novice::PlayAudio(startSound, false, 0.7f);
                     }
 
 
@@ -485,8 +521,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma endregion
             break;
+#pragma endregion
 
         case PLAY:
+#pragma region 音を流す
+            //音楽を流す
+            if (!Novice::IsPlayingAudio(gamePlayBGM) || gamePlayBGM == -1) {
+                //Novice::StopAudio(openingPlay);
+                gamePlayBGM = Novice::PlayAudio(gameBGM, true, gameVolume);
+            }
+            if (!Novice::IsPlayingAudio(gamePlayBGM2) || gamePlayBGM2 == -1) {
+                //Novice::StopAudio(openingPlay);
+                gamePlayBGM2 = Novice::PlayAudio(gameBGM2, true, gameVolume+0.3f);
+            }
+#pragma endregion
+
 
             playSceneBlackOut--;
             if (playSceneBlackOut <= 0) {
@@ -760,6 +809,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                 // ダッシュ
                 if (player.isAlive) {
                     if (keys[DIK_SPACE] && preKeys[DIK_SPACE] == 0) {
+                        //音を流す
+                        Novice::PlayAudio(dashSound, false, 0.7f);
 
                         // 目標位置を更新
                         player.targetPos.x = cursor.pos.x;
@@ -812,7 +863,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     // ダッシュ
                     if (player.isAlive) {
                         if (Novice::IsTriggerButton(0, kPadButton10)) {
-
+                            //音を流す
+                            Novice::PlayAudio(dashSound, false, 0.7f);
                             // 目標位置を更新
                             player.targetPos.x = cursor.pos.x;
                             player.targetPos.y = cursor.pos.y;
@@ -909,6 +961,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
                     player.checkPointPos = checkPoint[i].pos;
                     checkPoint[i].isAction = true;
+                    //効果音
+                    Novice::PlayAudio(damageSound, false, 0.6f);
                 }
 
                 if (checkPoint[i].isAction) {
@@ -936,12 +990,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             if (player.pos.x >= clearLine.x - 60.0f) {
 
                 player.pos = Lerp(player.pos, { clearLine.x + 100.0f,player.pos.y }, 0.1f);
-
+                if (!Novice::IsPlayingAudio(gameClearPlay) || gameClearPlay == -1) {
+                   
+                    gameClearPlay = Novice::PlayAudio(gameClearSound, true, gameVolume + 0.3f);
+                }
                 isInput = false;
 
                 whiteOutAlpha += 2;
                 if (whiteOutAlpha >= 255) {
-
+                    Novice::StopAudio(gamePlayBGM);
+                    Novice::StopAudio(gamePlayBGM2);
                     whiteOutAlpha = 255;
                     scene = CLEAR;
                 }
@@ -1031,40 +1089,41 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma endregion
 
-//#pragma region 当たり判定
-//
-//            for (int i = 0; i < maxEnemy; i++) {
-//                if (isCollision(player.pos, enemies[i].pos, player.radius, enemies[i].radius)
-//                    || isCollision(player.pos, enemiesBig[i].pos, player.radius, enemiesBig[i].radius)) {
-//
-//                    player.isAlive = false;
-//
-//                    // シェイク
-//                    randMax = 20;
-//
-//                    for (int j = 0; j < particlesToGenerate; ++j) {
-//                        for (int l = 0; l < maxParticles; ++l) {
-//                            if (!particles[l].isActive) {
-//                                particles[l].pos = player.pos;
-//
-//                                particles[l].randomAngle = (rand() % 10 - 1) + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
-//
-//                                particles[l].speed = 5.0f + (rand() % 5);
-//
-//                                particles[l].velocity = { cosf(particles[l].randomAngle) * particles[l].speed, sinf(particles[l].randomAngle) * particles[l].speed };
-//
-//                                particles[l].radius = 5.0f;
-//                                particles[l].lifeTime = 60;
-//                                particles[l].isActive = true;
-//
-//                                break;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//
-//#pragma endregion
+#pragma region 当たり判定
+
+            for (int i = 0; i < maxEnemy; i++) {
+                if (isCollision(player.pos, enemies[i].pos, player.radius, enemies[i].radius)
+                    || isCollision(player.pos, enemiesBig[i].pos, player.radius, enemiesBig[i].radius)) {
+
+                    player.isAlive = false;
+                    //効果音
+                    Novice::PlayAudio(chackPointSound, false, 0.9f);
+                    // シェイク
+                    randMax = 20;
+
+                    for (int j = 0; j < particlesToGenerate; ++j) {
+                        for (int l = 0; l < maxParticles; ++l) {
+                            if (!particles[l].isActive) {
+                                particles[l].pos = player.pos;
+
+                                particles[l].randomAngle = (rand() % 10 - 1) + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
+
+                                particles[l].speed = 5.0f + (rand() % 5);
+
+                                particles[l].velocity = { cosf(particles[l].randomAngle) * particles[l].speed, sinf(particles[l].randomAngle) * particles[l].speed };
+
+                                particles[l].radius = 5.0f;
+                                particles[l].lifeTime = 60;
+                                particles[l].isActive = true;
+
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+#pragma endregion
 
 #pragma region 描画
 
@@ -1211,6 +1270,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			switch (clearScene) {
 			case EYE:
 #pragma region 更新処理
+                //音
+                if (!Novice::IsPlayingAudio(clearPlay) || clearPlay == -1) {
+                    //Novice::StopAudio(openingPlay);
+                    clearPlay = Novice::PlayAudio(clearBGM, true, gameVolume);
+                }
 				clearTimer++;
 				if (clearTimer > 100) {
 					if (clearFadeInOut > 0) {
@@ -1221,12 +1285,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 				if (clearTimer > 1000) {
 					clearScene = ENDING;
+                    Novice::StopAudio(clearGrithPlay);
+                    Novice::StopAudio(clearPlay);
+                    Novice::StopAudio(clearPlay2);
+                    Novice::StopAudio(gameClearPlay);
 					clearTimer = 0;
 					clearFadeInOut = 255;
 					clearColor = WHITE;
 					clearPlayerAnime = 0;
 					clearZoom = 0.0f;
 				} else if (clearTimer > 610) {
+                    if (!Novice::IsPlayingAudio(clearPlay2) || clearPlay2 == -1) {
+                        //Novice::StopAudio(openingPlay);
+                        clearPlay2 = Novice::PlayAudio(clearBGM2, true, gameVolume);
+                    }
 					if (clearZoom > 1.f) {
 						clearZoom -= 0.055f;
 					} else {
@@ -1261,6 +1333,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					clearZoom = 0.f;
 				} else if (clearTimer > 300) {
 					clearZoom += 0.005f;
+                    if (!Novice::IsPlayingAudio(clearGrithPlay) || clearGrithPlay == -1) {
+                        //Novice::StopAudio(openingPlay);
+                        clearGrithPlay = Novice::PlayAudio(clearGrith, true, gameVolume);
+                    }
 				}
 
 #pragma endregion
