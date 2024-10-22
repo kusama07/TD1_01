@@ -796,10 +796,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     leftStickY = 1;
                 }
 
-                float magnitudeKey = std::sqrtf(float(leftStickX * leftStickX + leftStickY * leftStickY));
                 Vector2 directionKey = {
-                    (float)leftStickX / magnitudeKey,
-                    (float)leftStickY / magnitudeKey
+                    (float)leftStickX,
+                    (float)leftStickY
                 };
 
                 // カーソルの位置を計算
