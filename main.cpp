@@ -122,6 +122,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     char keys[256] = { 0 };
     char preKeys[256] = { 0 };
 
+	enum Scene {
+		START,
+		PLAY,
+		CLEAR,
+		END
+
+	}scene = CLEAR;
 //************************* 宣言 *************************//
 
 #pragma region タイトル用の変数
@@ -273,6 +280,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         Novice::LoadTexture("./Resources/PlayScene/cursor.png"),
         Novice::LoadTexture("./Resources/PlayScene/cursorMidpoint.png"),
     };
+#pragma region Clear画面用の変数
+	enum ClearScene {
+		EYE,
+		ENDING
+	}clearScene = EYE;
 
 #pragma endregion
 
@@ -339,6 +351,26 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     while (Novice::ProcessMessage() == 0) {
         // フレームの開始
         Novice::BeginFrame();
+	int clearTimer = 0;
+	int clearFadeInOut = 255;
+	unsigned int clearColor = WHITE;
+	int isClearEnd = false;
+	int clearEndTimer = 0;
+
+	int clearPlayerAnime = 0;
+	float clearZoom = 0.0f;
+	int clearBackground = Novice::LoadTexture("./Resources/Images/gameClearBack.png");
+	int clearEye = Novice::LoadTexture("./Resources/Images/eye.png");
+	int clearPlayerGraph = Novice::LoadTexture("./Resources/Images/clearPlayer.png");
+	int clearLogo = Novice::LoadTexture("./Resources/Images/clearLogo.png");
+#pragma endregion
+
+
+
+	// ウィンドウの×ボタンが押されるまでループ
+	while (Novice::ProcessMessage() == 0) {
+		// フレームの開始
+		Novice::BeginFrame();
 
         // キー入力を受け取る
         memcpy(preKeys, keys, 256);
@@ -437,8 +469,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             if (titleFadeInOut > 0) {
                 Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x00000000 + titleFadeInOut, kFillModeSolid);
             }
-
-            Novice::ScreenPrintf(0, 30, "%d", gameIsStart);
 
 #pragma endregion
             break;
@@ -1114,12 +1144,168 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma endregion
 
-            break;
-        case CLEAR:
-            break;
-        case END:
-            break;
-        }
+			break;
+#pragma region クリア画面
+
+
+		case CLEAR:
+			switch (clearScene) {
+			case EYE:
+#pragma region 更新処理
+				clearTimer++;
+				if (clearTimer > 100) {
+					if (clearFadeInOut > 0) {
+						clearFadeInOut -= 5;
+					}
+
+				}
+
+				if (clearTimer > 1000) {
+					clearScene = ENDING;
+					clearTimer = 0;
+					clearFadeInOut = 255;
+					clearColor = WHITE;
+					clearPlayerAnime = 0;
+					clearZoom = 0.0f;
+				} else if (clearTimer > 610) {
+					if (clearZoom > 1.f) {
+						clearZoom -= 0.055f;
+					} else {
+						clearZoom += 0.025f;
+					}
+					if (clearTimer < 800) {
+						if (clearPlayerAnime < 600) {
+							clearPlayerAnime += 100;
+						} else {
+							clearPlayerAnime = 0;
+						}
+
+					} else {
+						clearPlayerAnime = 600;
+						if (clearTimer % 8 == 0) {
+							clearColor = RED;
+						} else if (clearTimer % 8 == 2) {
+							clearColor = BLUE;
+						} else if (clearTimer % 8 == 4) {
+							clearColor = WHITE;
+						} else if (clearTimer % 8 == 6) {
+							clearColor = 0xffff00ff;
+						}
+					}
+
+
+
+				} else if (clearTimer > 600) {
+					if (clearPlayerAnime < 600) {
+						clearPlayerAnime += 100;
+					}
+					clearZoom = 0.f;
+				} else if (clearTimer > 300) {
+					clearZoom += 0.005f;
+				}
+
+#pragma endregion
+
+#pragma region 描画処理
+				Novice::DrawSprite(0 - static_cast<int>(clearZoom * 640.0f), 0 - static_cast<int>(clearZoom * 360.0f),
+					clearBackground, 1.0f + clearZoom, 1.0f + clearZoom, 0.0f, WHITE);
+
+				//プレイヤ
+				Novice::DrawSpriteRect(480 - static_cast<int>(clearZoom * 150.0f), 220 - static_cast<int>(clearZoom * 150.0f),
+					clearPlayerAnime, 0, 300, 300, clearPlayerGraph, 1.f / 3.f + clearZoom / 3.f, 1.f + clearZoom, 0.f, clearColor);
+				if (clearTimer > 950) {
+					Novice::DrawBox(0, 0, 1280, 720, 0.0f, BLACK, kFillModeSolid);
+				} else if (clearTimer > 800) {
+					Novice::DrawSprite(0 - static_cast<int>(clearZoom * 640.0f), 0 - static_cast<int>(clearZoom * 360.0f),
+						clearEye, 1.0f + clearZoom, 1.0f + clearZoom, 0.0f, 0xffffff55);
+				} else if (clearTimer > 600) {
+
+				} else if (clearTimer > 300) {
+					Novice::DrawSprite(0 - static_cast<int>(clearZoom * 640.0f), 0 - static_cast<int>(clearZoom * 360.0f),
+						clearEye, 1.0f + clearZoom, 1.0f + clearZoom, 0.0f, 0xffffff55);
+				}
+				if (clearScene == EYE) {
+					Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0xffffff00 + clearFadeInOut, kFillModeSolid);
+				} else {
+					Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x00000000 + clearFadeInOut, kFillModeSolid);
+				}
+#pragma endregion
+				break;
+			case ENDING:
+#pragma region 更新処理
+				clearTimer++;
+
+				//ボタンが押されたか
+				if (isClearEnd) {
+					clearEndTimer++;
+					//フェードイン・アウト
+					if (clearFadeInOut < 255) {
+						clearFadeInOut += 5;
+
+					}
+
+					//ボタンが押されてから一定時間後
+					if (clearEndTimer > 140) {
+						//Clear用変数のリセット
+						clearScene = EYE;
+
+						clearTimer = 0;
+						clearFadeInOut = 255;
+						clearColor = WHITE;
+						isClearEnd = false;
+						clearEndTimer = 0;
+						clearPlayerAnime = 0;
+						clearZoom = 0.0f;
+
+						//タイトル画面へ
+						scene = START;
+					}
+				} else {
+					//フェードイン・アウト
+					if (clearFadeInOut > 0) {
+						if (clearTimer > 50) {
+							clearFadeInOut -= 5;
+						}
+					}
+
+					//キーが押されるとタイトル
+					for (int i = 0; i < 256; i++) {
+						if (keys[i] && preKeys[i] == 0) {
+							isClearEnd = true;
+						}
+					}
+
+					//ボタンが押されるとタイトル
+					if (Novice::IsTriggerButton(0, kPadButton0) || Novice::IsTriggerButton(0, kPadButton1) ||
+						Novice::IsTriggerButton(0, kPadButton2) || Novice::IsTriggerButton(0, kPadButton3) ||
+						Novice::IsTriggerButton(0, kPadButton4) || Novice::IsTriggerButton(0, kPadButton5) ||
+						Novice::IsTriggerButton(0, kPadButton6) || Novice::IsTriggerButton(0, kPadButton7) ||
+						Novice::IsTriggerButton(0, kPadButton8) || Novice::IsTriggerButton(0, kPadButton9) ||
+						Novice::IsTriggerButton(0, kPadButton10) || Novice::IsTriggerButton(0, kPadButton11)) {
+						isClearEnd = true;
+					}
+
+
+
+				}
+#pragma endregion
+
+#pragma region 描画処理
+				Novice::DrawSprite(0, 0, titleBackgroundGraph, 1.0f, 1.0f, 0.0f, 0xff0000ff);
+				Novice::DrawSprite(0, 0, clearLogo, 1.0f, 1.0f, 0.0f, 0xff9090ff);
+				//フェードイン・アウト
+				if (titleFadeInOut > 0) {
+					Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x00000000 + clearFadeInOut, kFillModeSolid);
+				}
+#pragma endregion				
+				break;
+			}
+
+			break;
+#pragma endregion
+		case END:
+			break;
+		}
 
         /// ↑描画処理ここまで
         ///
