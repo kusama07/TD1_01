@@ -263,7 +263,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma region パーティくる
 
     // パーティクルの最大数
-    const int maxParticles = 50;
+    const int maxParticles = 100;
     Particle particles[maxParticles];
 
     for (int i = 0; i < maxParticles; ++i) {
@@ -904,7 +904,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                                 if (!particles[i].isActive) {
                                     particles[i].pos = player.pos;
 
-                                    particles[i].randomAngle1 = ((rand() % 360) * (float)M_PI / 180.0f);
+                                    particles[i].randomAngle1 = ((rand() % 200) * (float)M_PI / 180.0f);
                                     
                                     particles[i].baseAngle = atan2f(player.targetPos.y - player.pos.y, player.targetPos.x - player.pos.x) + ((float)M_PI);
 
@@ -1133,7 +1133,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                             if (!particles[l].isActive) {
                                 particles[l].pos = player.pos;
 
-                                particles[i].randomAngle1 = ((rand() % 360) * (float)M_PI / 180.0f);
+                                particles[i].randomAngle1 = ((rand() % 100) * (float)M_PI / 180.0f);
 
                                 particles[l].randomAngle = (rand() % 10 - 1) + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
 
