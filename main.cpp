@@ -332,17 +332,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     middleBg[2].th = Novice::LoadTexture("./Resources/PlayScene/background2_2.png");
 
     //
-    BackGround frontmostBg[4];
+    BackGround frontmostBg[3];
 
     frontmostBg[0].pos = { 0.0f, -20.0f };
     frontmostBg[1].pos = {1280.0f , -20.0f};
     frontmostBg[2].pos = { 2560.0f , -20.0f };
-    frontmostBg[3].pos = { -1280.0f , -20.0f };
 
     frontmostBg[0].th = Novice::LoadTexture("./Resources/PlayScene/background3_1.png");
     frontmostBg[1].th = Novice::LoadTexture("./Resources/PlayScene/background3_2.png");
     frontmostBg[2].th = Novice::LoadTexture("./Resources/PlayScene/background3_3.png");
-    frontmostBg[3].th = Novice::LoadTexture("./Resources/PlayScene/background3_1.png");
 
     int playSceneBlackOut = 255;
     
@@ -1108,11 +1106,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                 frontmostBg[2].th, 1.0f, 1.0f, 0.0f, 0xFFFFFFEE
             );
 
-            Novice::DrawSprite(
-                (int)frontmostBg[1].pos.x - 1280 - (int)camera.pos.x,
-                (int)frontmostBg[1].pos.y - (int)camera.pos.y,
-                frontmostBg[3].th, 1.0f, 1.0f, 0.0f, 0xFFFFFFEE
-            );
 
             //**************************クリアライト
             Novice::DrawSprite(((int)clearLine.x - 300) - (int)camera.pos.x, 0 - (int)camera.pos.y, clearLineTh, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF);
