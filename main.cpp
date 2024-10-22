@@ -1119,33 +1119,35 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma region 当たり判定
 
             for (int i = 0; i < maxEnemy; i++) {
-                if (isCollision(player.pos, enemies[i].pos, player.radius, enemies[i].radius)
-                    || isCollision(player.pos, enemiesBig[i].pos, player.radius, enemiesBig[i].radius)) {
+                if (isInput) {
+                    if (isCollision(player.pos, enemies[i].pos, player.radius, enemies[i].radius)
+                        || isCollision(player.pos, enemiesBig[i].pos, player.radius, enemiesBig[i].radius)) {
 
-                    player.isAlive = false;
-                    //効果音
-                    Novice::PlayAudio(chackPointSound, false, 0.9f);
-                    // シェイク
-                    randMax = 20;
+                        player.isAlive = false;
+                        //効果音
+                        Novice::PlayAudio(chackPointSound, false, 0.9f);
+                        // シェイク
+                        randMax = 20;
 
-                    for (int j = 0; j < particlesToGenerate; ++j) {
-                        for (int l = 0; l < maxParticles; ++l) {
-                            if (!particles[l].isActive) {
-                                particles[l].pos = player.pos;
+                        for (int j = 0; j < particlesToGenerate; ++j) {
+                            for (int l = 0; l < maxParticles; ++l) {
+                                if (!particles[l].isActive) {
+                                    particles[l].pos = player.pos;
 
-                                particles[i].randomAngle1 = ((rand() % 100) * (float)M_PI / 180.0f);
+                                    particles[i].randomAngle1 = ((rand() % 100) * (float)M_PI / 180.0f);
 
-                                particles[l].randomAngle = (rand() % 10 - 1) + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
+                                    particles[l].randomAngle = (rand() % 10 - 1) + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
 
-                                particles[l].speed = 5.0f + (rand() % 5);
+                                    particles[l].speed = 5.0f + (rand() % 5);
 
-                                particles[l].velocity = { cosf(particles[l].randomAngle) * particles[l].speed, sinf(particles[l].randomAngle) * particles[l].speed };
+                                    particles[l].velocity = { cosf(particles[l].randomAngle) * particles[l].speed, sinf(particles[l].randomAngle) * particles[l].speed };
 
-                                particles[l].radius = 5.0f;
-                                particles[l].lifeTime = 60;
-                                particles[l].isActive = true;
+                                    particles[l].radius = 5.0f;
+                                    particles[l].lifeTime = 60;
+                                    particles[l].isActive = true;
 
-                                break;
+                                    break;
+                                }
                             }
                         }
                     }
