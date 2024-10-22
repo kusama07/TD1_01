@@ -36,13 +36,14 @@ struct Particle {
     float speed;
 };
 
-// 敵の構造体
 struct Enemy {
     Vector2 pos;  
     int enemyType; // 敵の種類 (0: 円, 1: 縦方向, 2: 横方向)
     float theta;     
     float amplitude;
     float radius;
+    int animeCount;
+    int screenPosX;
 };
 
 struct Cursor {
@@ -59,6 +60,11 @@ struct Camera {
 struct CheckPoint {
     Vector2 pos;
     int th;
+    int w;
+    int h;
+    int animeCount;
+    int screenPosX;
+    bool isAction;
 };
 
 struct BackGround {
@@ -131,17 +137,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region 敵
 
-    const int maxEnemy = 42;
+    const int maxEnemy = 100;
 
     Enemy enemies[maxEnemy];
-    
+
     for (int i = 0; i < maxEnemy; i++) {
         enemies[i].pos = { 800.0f, 360.0f };
-        enemies[i].enemyType = i % 3; 
-        enemies[i].theta = 0.0f;
+        enemies[i].enemyType = i % 3;
+        enemies[i].theta = 0;
         enemies[i].amplitude = 150.0f;
         enemies[i].radius = 40.0f;
+        enemies[i].animeCount = rand() % 60;
+        enemies[i].screenPosX = 0;
     }
+
+    int screenPositions[4] = { 0, 120, 240, 360 }; 
 
     Enemy enemiesBig[maxEnemy];
 
@@ -151,7 +161,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         enemiesBig[i].theta = 0;
         enemiesBig[i].amplitude = 150.0f;
         enemiesBig[i].radius = 60.0f;
+        enemiesBig[i].animeCount = rand() % 60;
+        enemiesBig[i].screenPosX = 0;
     }
+
+    int enemyTh = Novice::LoadTexture("./Resources/PlayScene/enemyMedium.png");
+    int enemyBigTh = Novice::LoadTexture("./Resources/PlayScene/enemyLage.png");
 
     int stage2pos = 1280;
     int stage3pos = 2560;
@@ -210,11 +225,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
     //*********チェックポイント
     CheckPoint checkPoint{
-        checkPoint.pos = {720.0f / 2.0f,0.0f},
+        checkPoint.pos = {720.0f / 2.0f,720.0f / 2.0f},
         checkPoint.th = Novice::LoadTexture("./Resources/PlayScene/checkpoint.png"),
+        checkPoint.w = 200 / 2,
+        checkPoint.h = 720 / 2,
+        checkPoint.animeCount = 45,
+        checkPoint.screenPosX = 0,
+        checkPoint.isAction = false,
     };
 
-    Vector2 clearLine = { 1280.0f * 3.0f , 0.0f };
+    Vector2 clearLine = { 1280.0f * 4.0f , 0.0f };
     int clearLineTh = Novice::LoadTexture("./Resources/PlayScene/goalLighting.png");
 
 #pragma endregion
@@ -258,8 +278,34 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
     int whiteOutAlpha = 0;
 
-    enemies[0].theta = 0.0f;
-    enemies[1].theta = (float)M_PI / 4.0f;
+    //背景
+    BackGround innermostBg[2];
+
+    innermostBg[0].pos.x = 0.0f;
+    innermostBg[1].pos.x = 1280.0f;
+
+    innermostBg[0].th = Novice::LoadTexture("./Resources/PlayScene/background1_1.png");
+    innermostBg[1].th = Novice::LoadTexture("./Resources/PlayScene/background1_2.png");
+
+    //
+    BackGround middleBg[2];
+
+    middleBg[0].pos.x = 0.0f;
+    middleBg[1].pos.x = 1280.0f;
+
+    middleBg[0].th = Novice::LoadTexture("./Resources/PlayScene/background2_1.png");
+    middleBg[1].th = Novice::LoadTexture("./Resources/PlayScene/background2_2.png");
+
+    //
+    BackGround frontmostBg[3];
+
+    frontmostBg[0].pos.x = 0.0f;
+    frontmostBg[1].pos.x = 1280.0f;
+    frontmostBg[2].pos.x = 2560.0f;
+
+    frontmostBg[0].th = Novice::LoadTexture("./Resources/PlayScene/background3_1.png");
+    frontmostBg[1].th = Novice::LoadTexture("./Resources/PlayScene/background3_2.png");
+    frontmostBg[2].th = Novice::LoadTexture("./Resources/PlayScene/background3_3.png");
 
 //*****************************************************//
 
@@ -357,33 +403,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     enemies[42].pos = circleEnemy({ stage3pos + 690.0f, 500.0f }, 280.0f, enemies[42].theta, moveSlow); /// the big circular
                     enemies[43].pos = circleEnemy({ stage3pos + 970.0f, 500.0f }, 280.0f, enemies[43].theta, -moveSlow); /// the big circular
                     enemies[44].pos = circleEnemy({ stage3pos + 1250.0f, 500.0f }, 280.0f, enemies[44].theta, moveSlow); /// the big circular
-                    //enemies[45].pos = circleEnemy({ stage3pos + 1530.0f, 500.0f }, 280.0f, enemies[45].theta, -moveSlow); /// the big circular
 
-                    //enemies[46].pos = circleEnemy({ stage3pos + 690.0f, 780.0f }, 280.0f, enemies[46].theta, -moveSlow); /// the big circular
                     enemies[47].pos = circleEnemy({ stage3pos + 970.0f, 780.0f }, 280.0f, enemies[47].theta, moveSlow); /// the big circular
                     enemies[48].pos = circleEnemy({ stage3pos + 1250.0f, 780.0f }, 280.0f, enemies[48].theta, -moveSlow); /// the big circular
                     enemies[49].pos = circleEnemy({ stage3pos + 1530.0f, 780.0f }, 280.0f, enemies[49].theta, moveSlow); /// the big circular
 
-
-                    /*enemies[32].pos = circleEnemy({ 960.0f, 0.0f }, 150.0f, enemies[32].theta, moveNormal);
-                    enemies[33].pos = circleEnemy({ 150.0f, 360.0f }, 150.0f, enemies[33].theta, moveNormal);
-                    enemies[34].pos = circleEnemy({ 480.0f, 540.0f }, 150.0f, enemies[34].theta, moveNormal);
-                    enemies[35].pos = circleEnemy({ 800.0f, 540.0f }, 150.0f, enemies[35].theta, moveNormal);
-                    enemies[36].pos = circleEnemy({ 960.0f, 360.0f }, 150.0f, enemies[36].theta, moveNormal);*/
                     ///ステージ4
                     enemies[50].pos = circleEnemy({ stage4pos + 840.0f , 360.0f }, 150.0f, enemies[50].theta, moveFast); ///inner
                     enemies[51].pos = circleEnemy({ stage4pos + 840.0f , 360.0f }, 200.0f, enemies[51].theta, -moveSlow);
                     enemies[52].pos = circleEnemy({ stage4pos + 840.0f , 360.0f }, 250.0f, enemies[52].theta, moveSlow);
-                    //enemies[53].pos = circleEnemy({ stage4pos + 840.0f , 360.0f }, 300.0f, enemies[53].theta, -moveNormal);
-                    //enemies[54].pos = circleEnemy({ stage4pos + 840.0f , 360.0f }, 350.0f, enemies[54].theta, moveNormal);
                     enemies[53].pos = circleEnemy({ stage4pos + 840.0f , 360.0f }, 400.0f, enemies[53].theta, -moveSlow);
                     enemies[54].pos = circleEnemy({ stage4pos + 840.0f , 360.0f }, 450.0f, enemies[54].theta, moveSlow);
                     enemies[55].pos = circleEnemy({ stage4pos + 840.0f , 360.0f }, 500.0f, enemies[55].theta, -moveNormal); ///outer*/
 
                 } else if (enemies[i].enemyType == 1) {
                     // 縦方向に往復する敵
-                    /// stage1
-                    //enemies[32].pos = verticalEnemy({ 1530.0f, 780.0f }, 280.0f, enemies[32].theta, moveNormal);
 
                     ///ステージ2
                     enemiesBig[1].pos = verticalEnemy({ stage2pos + 330.0f, 370.0f }, 100.0f, enemiesBig[1].theta, moveSlow); /// wall
@@ -416,7 +450,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     enemiesBig[23].pos = verticalEnemy({ stage3pos + 410.0f, 430.0f }, 100.0f, enemiesBig[23].theta, -moveNormal); /// wall 3
 
 
-                    ///stage4
+                    /////stage4
                     enemiesBig[24].pos = verticalEnemy({ stage4pos + 250.0f, 220.0f }, 100.0f, enemiesBig[24].theta, moveNormal); /// wall 3
                     enemiesBig[25].pos = verticalEnemy({ stage4pos + 250.0f, 220.0f }, 100.0f, enemiesBig[25].theta, -moveNormal); /// wall 3
                     enemiesBig[26].pos = verticalEnemy({ stage4pos + 250.0f, 220.0f }, 200.0f, enemiesBig[26].theta, moveNormal); /// wall 3
@@ -446,21 +480,48 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     enemiesBig[44].pos = horizonEnemy({ stage3pos + 1090.0f, 480.0f }, 100.0f, enemiesBig[44].theta, moveNormal); /// wall 3
                     enemiesBig[45].pos = horizonEnemy({ stage3pos + 1090.0f, 480.0f }, 100.0f, enemiesBig[45].theta, -moveSlow); /// wall 3
 
-
-                    /// ステージ３
-                    /*enemies[34].pos = horizonEnemy({ stage3pos + 480.0f, 180.0f }, 500.0f, enemies[34].theta, moveNormal); /// first purple line << add 6 more
-                    enemies[35].pos = horizonEnemy({ stage3pos + 640.0f, 270.0f }, 350.0f, enemies[35].theta, moveFast); /// second  << add 1 more
-                    enemies[36].pos = horizonEnemy({ stage3pos + 160.0f, 270.0f }, 150.0f, enemies[36].theta, moveNormal); /// second right side << add 3 more
-                    enemies[37].pos = horizonEnemy({ stage3pos + 480.0f, 450.0f }, 150.0f, enemies[37].theta, moveNormal); /// third line << add 6 more
-                    enemies[38].pos = horizonEnemy({ stage3pos + 480.0f, 540.0f }, 150.0f, enemies[38].theta, moveNormal); /// forth line << add 6 more
-                    enemies[39].pos = horizonEnemy({ stage3pos + 1120.0f, 180.0f }, 150.0f, enemies[39].theta, moveFast); /// right one 1
-                    enemies[40].pos = horizonEnemy({ stage3pos + 1120.0f, 360.0f }, 150.0f, enemies[40].theta, moveFast); /// right one 2
-                    enemies[41].pos = horizonEnemy({ stage3pos + 1120.0f, 540.0f }, 150.0f, enemies[41].theta, moveFast); /// right one 3*/
-
-
                 }
             }
 
+            for (int i = 0; i < maxEnemy; i++) {
+                enemies[i].animeCount--;
+
+                if (enemies[i].animeCount <= 0) {
+                    enemies[i].animeCount = 60;
+
+                } else if (enemies[i].animeCount <= 10) {
+                    enemies[i].screenPosX = 0;
+                } else if (enemies[i].animeCount <= 20) {
+                    enemies[i].screenPosX = 120;
+                } else if (enemies[i].animeCount <= 40) {
+                    enemies[i].screenPosX = 240;
+                } else if (enemies[i].animeCount <= 60) {
+                    enemies[i].screenPosX = 360;
+                }
+            }
+
+            for (int i = 0; i < maxEnemy; i++) {
+                enemiesBig[i].animeCount--;
+
+                if (enemiesBig[i].animeCount <= 0) {
+
+                    enemiesBig[i].animeCount = 40;
+                    enemiesBig[i].screenPosX = 0;
+
+                } else if (enemiesBig[i].animeCount <= 10) {
+
+                    enemiesBig[i].screenPosX = 0;
+                } else if (enemiesBig[i].animeCount <= 20) {
+
+                    enemiesBig[i].screenPosX = 200;
+                } else if (enemiesBig[i].animeCount <= 30) {
+
+                    enemiesBig[i].screenPosX = 400;
+                } else if (enemiesBig[i].animeCount <= 40) {
+
+                    enemiesBig[i].screenPosX = 600;
+                }
+            }
 
 #pragma endregion
 
@@ -597,6 +658,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             if (player.pos.x >= checkPoint.pos.x) {
 
                 player.checkPointPos.x = checkPoint.pos.x;
+                checkPoint.isAction = true;
+            }
+
+            if (checkPoint.isAction) {
+
+                checkPoint.animeCount--;
+
+                if (checkPoint.animeCount <= 0) {
+
+                    checkPoint.animeCount = 0;
+                    checkPoint.screenPosX = 600;
+                } else if (checkPoint.animeCount <= 15) {
+
+                    checkPoint.screenPosX = 400;
+                } else if (checkPoint.animeCount <= 30) {
+
+                    checkPoint.screenPosX = 200;
+                } else if (checkPoint.animeCount <= 45) {
+
+                    checkPoint.screenPosX = 0;
+                }
             }
 
             // ****************ゴール
@@ -697,57 +779,117 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma endregion
 
-#pragma region 当たり判定
-
-            for (int i = 0; i < maxEnemy; i++) {
-                if (isCollision(player.pos, enemies[i].pos, player.radius, enemies[i].radius)) {
-
-                    player.isAlive = false;
-
-                    // シェイク
-                    randMax = 20;
-
-                    for (int j = 0; j < particlesToGenerate; ++j) {
-                        for (int l = 0; l < maxParticles; ++l) {
-                            if (!particles[l].isActive) {
-                                particles[l].pos = player.pos;
-
-                                particles[l].randomAngle = (rand() % 10 - 1) + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
-
-                                particles[l].speed = 5.0f + (rand() % 5);
-
-                                particles[l].velocity = { cosf(particles[l].randomAngle) * particles[l].speed, sinf(particles[l].randomAngle) * particles[l].speed };
-
-                                particles[l].radius = 5.0f;
-                                particles[l].lifeTime = 60;
-                                particles[l].isActive = true;
-
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-#pragma endregion
+//#pragma region 当たり判定
+//
+//            for (int i = 0; i < maxEnemy; i++) {
+//                if (isCollision(player.pos, enemies[i].pos, player.radius, enemies[i].radius)) {
+//
+//                    player.isAlive = false;
+//
+//                    // シェイク
+//                    randMax = 20;
+//
+//                    for (int j = 0; j < particlesToGenerate; ++j) {
+//                        for (int l = 0; l < maxParticles; ++l) {
+//                            if (!particles[l].isActive) {
+//                                particles[l].pos = player.pos;
+//
+//                                particles[l].randomAngle = (rand() % 10 - 1) + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
+//
+//                                particles[l].speed = 5.0f + (rand() % 5);
+//
+//                                particles[l].velocity = { cosf(particles[l].randomAngle) * particles[l].speed, sinf(particles[l].randomAngle) * particles[l].speed };
+//
+//                                particles[l].radius = 5.0f;
+//                                particles[l].lifeTime = 60;
+//                                particles[l].isActive = true;
+//
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//
+//#pragma endregion
 
 #pragma region 描画
 
             //**************************背景
-            Novice::DrawBox(0 - (int)camera.pos.x, 0 - (int)camera.pos.y,
-                1280, 720, 0.0f, BLACK, kFillModeSolid);
 
+            for (int i = 0; i < 2; i++) {
+                for (int j = 0; j < 2; j++) {
+                    Novice::DrawSprite(
+                        (int)innermostBg[i].pos.x + (j * 2560) - (int)camera.pos.x,
+                        (int)innermostBg[i].pos.y - (int)camera.pos.y, 
+                        innermostBg[i].th, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF
+                    );
+                }
+            }
+            
+
+            for (int i = 0; i < 2; i++) {
+                for (int j = 0; j < 2; j++) {
+                    Novice::DrawSprite(
+                        (int)middleBg[i].pos.x + (j * 2560) - (int)camera.pos.x,
+                        (int)middleBg[i].pos.y - (int)camera.pos.y,
+                        middleBg[i].th, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF
+                    );
+                }
+            }
+
+            Novice::DrawSprite(
+                (int)frontmostBg[0].pos.x - (int)camera.pos.x, 
+                (int)frontmostBg[0].pos.y - (int)camera.pos.y,  
+                frontmostBg[0].th, 1.0f, 1.0f, 0.0f, 0xFFFFFFEE
+            );
+
+            Novice::DrawSprite(
+                (int)frontmostBg[0].pos.x + 3840 - (int)camera.pos.x,  
+                (int)frontmostBg[0].pos.y - (int)camera.pos.y,  
+                frontmostBg[0].th, 1.0f, 1.0f, 0.0f, 0xFFFFFFEE
+            );
+
+            Novice::DrawSprite(
+                (int)frontmostBg[1].pos.x - (int)camera.pos.x, 
+                (int)frontmostBg[1].pos.y - (int)camera.pos.y, 
+                frontmostBg[1].th, 1.0f, 1.0f, 0.0f, 0xFFFFFFEE
+            );
+
+            Novice::DrawSprite(
+                (int)frontmostBg[2].pos.x - (int)camera.pos.x, 
+                (int)frontmostBg[2].pos.y - (int)camera.pos.y,  
+                frontmostBg[2].th, 1.0f, 1.0f, 0.0f, 0xFFFFFFEE
+            );
+
+            //**************************クリアライト
             Novice::DrawSprite(((int)clearLine.x - 300) - (int)camera.pos.x, 0 - (int)camera.pos.y, clearLineTh, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF);
 
             //*********************チェックポイント
-            Novice::DrawSprite(((int)checkPoint.pos.x - 105) - (int)camera.pos.x, 0, checkPoint.th, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF);
+
+            Novice::DrawQuad(
+                ((int)checkPoint.pos.x - (int)checkPoint.w) - (int)camera.pos.x, ((int)checkPoint.pos.y - (int)checkPoint.h) - (int)camera.pos.y,
+                ((int)checkPoint.pos.x + (int)checkPoint.w) - (int)camera.pos.x, ((int)checkPoint.pos.y - (int)checkPoint.h) - (int)camera.pos.y,
+                ((int)checkPoint.pos.x - (int)checkPoint.w) - (int)camera.pos.x, ((int)checkPoint.pos.y + (int)checkPoint.h) - (int)camera.pos.y,
+                ((int)checkPoint.pos.x + (int)checkPoint.w) - (int)camera.pos.x, ((int)checkPoint.pos.y + (int)checkPoint.h) - (int)camera.pos.y,
+                checkPoint.screenPosX, 0, 200, 720, checkPoint.th, 0xFFFFFFFF);
 
             //**************************敵
             // 敵の描画
             for (int i = 0; i < maxEnemy; i++) {
-                Novice::DrawEllipse((int)(enemies[i].pos.x - camera.pos.x), (int)(enemies[i].pos.y - camera.pos.y),
-                    (int)enemies[i].radius, (int)enemies[i].radius,
-                    0.0f, RED, kFillModeSolid);
+                Novice::DrawQuad(
+                    ((int)enemies[i].pos.x - (int)enemies[i].radius) - (int)camera.pos.x, ((int)enemies[i].pos.y - (int)enemies[i].radius) - (int)camera.pos.y,
+                    ((int)enemies[i].pos.x + (int)enemies[i].radius) - (int)camera.pos.x, ((int)enemies[i].pos.y - (int)enemies[i].radius) - (int)camera.pos.y,
+                    ((int)enemies[i].pos.x - (int)enemies[i].radius) - (int)camera.pos.x, ((int)enemies[i].pos.y + (int)enemies[i].radius) - (int)camera.pos.y,
+                    ((int)enemies[i].pos.x + (int)enemies[i].radius) - (int)camera.pos.x, ((int)enemies[i].pos.y + (int)enemies[i].radius) - (int)camera.pos.y,
+                    enemies[i].screenPosX, 0, 120, 120, enemyTh, 0xFFFFFFFF);
+
+                Novice::DrawQuad(
+                    ((int)enemiesBig[i].pos.x - (int)enemiesBig[i].radius) - (int)camera.pos.x, ((int)enemiesBig[i].pos.y - (int)enemiesBig[i].radius) - (int)camera.pos.y,
+                    ((int)enemiesBig[i].pos.x + (int)enemiesBig[i].radius) - (int)camera.pos.x, ((int)enemiesBig[i].pos.y - (int)enemiesBig[i].radius) - (int)camera.pos.y,
+                    ((int)enemiesBig[i].pos.x - (int)enemiesBig[i].radius) - (int)camera.pos.x, ((int)enemiesBig[i].pos.y + (int)enemiesBig[i].radius) - (int)camera.pos.y,
+                    ((int)enemiesBig[i].pos.x + (int)enemiesBig[i].radius) - (int)camera.pos.x, ((int)enemiesBig[i].pos.y + (int)enemiesBig[i].radius) - (int)camera.pos.y,
+                    enemiesBig[i].screenPosX, 0, 200, 200, enemyBigTh, 0xFFFFFFFF);
             }
 
             //*************************カーソルの描画
@@ -784,12 +926,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     ((int)player.pos.x - (int)player.radius) - (int)camera.pos.x, ((int)player.pos.y + (int)player.radius) - (int)camera.pos.y,
                     ((int)player.pos.x + (int)player.radius) - (int)camera.pos.x, ((int)player.pos.y + (int)player.radius) - (int)camera.pos.y,
                     player.screenPosX, 0, 60, 60, player.th, 0xFFFFFFFF);
-                
-                Novice::DrawEllipse(
-                    (int)(player.pos.x - camera.pos.x), (int)(player.pos.y - camera.pos.y),
-                    (int)player.radius, (int)player.radius,
-                    0.0f, 0xFFFFFF00, kFillModeWireFrame
-                );
             }
 
             //**********************パーティクル
@@ -804,13 +940,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
             //*********************:ホワイト
             Novice::DrawBox(0, 0, 1280, 720, 0.0f, GetColor(255, 255, 255, whiteOutAlpha), kFillModeSolid);
-            
-            //************************デバッグ用
-            Novice::ScreenPrintf(0, 20, "PlayerPosX : %.2f", player.pos.x);
-
-            Novice::ScreenPrintf(0, 40, "CameraPosX : %.2f", camera.pos.x);
-
-            Novice::ScreenPrintf(0, 60, "animeCount : %d", player.animeCount);
 
 #pragma endregion
 
@@ -820,9 +949,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         case END:
             break;
         }
-
-        // デバッグ用
-        Novice::ScreenPrintf(0, 0, "scene = %d", scene);
 
         /// ↑描画処理ここまで
         ///
