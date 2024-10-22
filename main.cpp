@@ -118,9 +118,33 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     // ライブラリの初期化
     Novice::Initialize(kWindowTitle, 1280, 720);
 
-	// キー入力結果を受け取る箱
-	char keys[256] = {0};
-	char preKeys[256] = {0};
+    // キー入力結果を受け取る箱
+    char keys[256] = { 0 };
+    char preKeys[256] = { 0 };
+
+//************************* 宣言 *************************//
+
+#pragma region タイトル用の変数
+
+	//画像
+	int titleBackgroundGraph = Novice::LoadTexture("./Resources/Images/titleBackground.png");
+	int titleLogoGraph = Novice::LoadTexture("./Resources/Images/titleLogo.png");
+
+	//ロゴの画像の切り取り開始位置
+	int titleLogoCutX = 1280 * 3;
+
+	//フェードイン・アウト
+	int titleFadeInOut = 255;
+	int titleFadeTimer = 0;
+
+	//ボタンが押されたか確認する変数
+	bool gameIsStart = false;
+
+	//タイトル画面用のタイマー
+	int titleTimer = 0;
+
+
+#pragma endregion
 
 #pragma region シーン
     enum Scene {
@@ -129,7 +153,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         CLEAR,
         END
 
-	}scene = PLAY;
+    }scene = START;
 
 #pragma endregion
 
@@ -270,7 +294,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     // XPAD用
     XINPUT_STATE state;
 
-    bool isInput = true;
+    bool isInput = false;
 
 #pragma endregion
 
@@ -315,110 +339,83 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     while (Novice::ProcessMessage() == 0) {
         // フレームの開始
         Novice::BeginFrame();
-#pragma region タイトル用の変数
-
-	//画像
-	int titleBackgroundGraph = Novice::LoadTexture("./Resources/Images/titleBackground.png");
-	int titleLogoGraph = Novice::LoadTexture("./Resources/Images/titleLogo.png");
-
-	//ロゴの画像の切り取り開始位置
-	int titleLogoCutX = 1280 * 3;
-
-	//フェードイン・アウト
-	int titleFadeInOut = 255;
-	int titleFadeTimer = 0;
-
-	//ボタンが押されたか確認する変数
-	bool gameIsStart = false;
-
-	//タイトル画面用のタイマー
-	int titleTimer = 0;
-
-
-#pragma endregion
-
-
-	// ウィンドウの×ボタンが押されるまでループ
-	while (Novice::ProcessMessage() == 0) {
-		// フレームの開始
-		Novice::BeginFrame();
 
         // キー入力を受け取る
         memcpy(preKeys, keys, 256);
         Novice::GetHitKeyStateAll(keys);
         XInputGetState(0, &state);
 
-		switch (scene)
-		{
-#pragma region タイトル画面
+        switch (scene)
+        {
+        case START:
 
-		case START:
+#pragma region タイトル画面
 
 #pragma region 更新処理
 
-			//タイトル画面用のタイマーを加算
-			titleTimer++;
+            //タイトル画面用のタイマーを加算
+            titleTimer++;
 
 
-			//ボタンが押されたか
-			if (gameIsStart) {
-				titleFadeTimer++;
-				//タイトルロゴのアニメーション
-				if (titleFadeTimer % 5 == 0) {
-					titleLogoCutX += 1280;
-				}
-				//フェードイン・アウト
-				if (titleFadeInOut < 255) {
-					titleFadeInOut += 5;
+            //ボタンが押されたか
+            if (gameIsStart) {
+                titleFadeTimer++;
+                //タイトルロゴのアニメーション
+                if (titleFadeTimer % 5 == 0) {
+                    titleLogoCutX += 1280;
+                }
+                //フェードイン・アウト
+                if (titleFadeInOut < 255) {
+                    titleFadeInOut += 5;
 
-				}
+                }
 
-				//ボタンが押されてから一定時間後
-				if (titleFadeTimer > 140) {
-					//タイトル用変数のリセット
-					titleLogoCutX = 1280 * 3;
-					titleFadeInOut = 255;
-					titleFadeTimer = 0;
-					gameIsStart = false;
-					titleTimer = 0;
+                //ボタンが押されてから一定時間後
+                if (titleFadeTimer > 140) {
+                    //タイトル用変数のリセット
+                    titleLogoCutX = 1280 * 3;
+                    titleFadeInOut = 255;
+                    titleFadeTimer = 0;
+                    gameIsStart = false;
+                    titleTimer = 0;
 
-					//ゲーム画面へ
-					scene = PLAY;
-				}
-			} else {
-				//フェードイン・アウト
-				if (titleFadeInOut > 0) {
-					if (titleTimer > 50) {
-						titleFadeInOut -= 5;
-					}
-				}
-				//タイトルロゴのアニメーション
-				if (titleLogoCutX > 0) {
+                    //ゲーム画面へ
+                    scene = PLAY;
+                }
+            } else {
+                //フェードイン・アウト
+                if (titleFadeInOut > 0) {
+                    if (titleTimer > 50) {
+                        titleFadeInOut -= 5;
+                    }
+                }
+                //タイトルロゴのアニメーション
+                if (titleLogoCutX > 0) {
 
-					if (titleTimer > 150 && titleTimer % 5 == 0) {
-						titleLogoCutX -= 1280;
-					}
-				} else {
-					//キーが押されるとスタート
-					for (int i = 0; i < 256; i++) {
-						if (keys[i] && preKeys[i] == 0) {
-							gameIsStart = true;
-						}
-					}
+                    if (titleTimer > 150 && titleTimer % 5 == 0) {
+                        titleLogoCutX -= 1280;
+                    }
+                } else {
+                    //キーが押されるとスタート
+                    for (int i = 0; i < 256; i++) {
+                        if (keys[i] && preKeys[i] == 0) {
+                            gameIsStart = true;
+                        }
+                    }
 
-					//ボタンが押されるとスタート
-					if (Novice::IsTriggerButton(0, kPadButton0) || Novice::IsTriggerButton(0, kPadButton1) ||
-						Novice::IsTriggerButton(0, kPadButton2) || Novice::IsTriggerButton(0, kPadButton3) || 
-						Novice::IsTriggerButton(0, kPadButton4) || Novice::IsTriggerButton(0, kPadButton5) || 
-						Novice::IsTriggerButton(0, kPadButton6) || Novice::IsTriggerButton(0, kPadButton7) || 
-						Novice::IsTriggerButton(0, kPadButton8) || Novice::IsTriggerButton(0, kPadButton9) ||
-						Novice::IsTriggerButton(0, kPadButton10) || Novice::IsTriggerButton(0, kPadButton11)) {
-						gameIsStart = true;
-					}
+                    //ボタンが押されるとスタート
+                    if (Novice::IsTriggerButton(0, kPadButton0) || Novice::IsTriggerButton(0, kPadButton1) ||
+                        Novice::IsTriggerButton(0, kPadButton2) || Novice::IsTriggerButton(0, kPadButton3) ||
+                        Novice::IsTriggerButton(0, kPadButton4) || Novice::IsTriggerButton(0, kPadButton5) ||
+                        Novice::IsTriggerButton(0, kPadButton6) || Novice::IsTriggerButton(0, kPadButton7) ||
+                        Novice::IsTriggerButton(0, kPadButton8) || Novice::IsTriggerButton(0, kPadButton9) ||
+                        Novice::IsTriggerButton(0, kPadButton10) || Novice::IsTriggerButton(0, kPadButton11)) {
+                        gameIsStart = true;
+                    }
 
 
-				}
-			}
+                }
+            }
 
 
 
@@ -427,23 +424,32 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion
 
 #pragma region 描画処理
-			//背景
-			Novice::DrawSprite(0, 0, titleBackgroundGraph, 1.0f, 1.0f, 0.0f, WHITE);
+            //背景
+            Novice::DrawSprite(0, 0, titleBackgroundGraph, 1.0f, 1.0f, 0.0f, WHITE);
 
-			//タイトルロゴ
-			if (titleTimer > 150) {
-				Novice::DrawSpriteRect(0, 0, titleLogoCutX, 0, 1280, 720, titleLogoGraph, 1.0f / 4.0f, 1.0f, 0.0f, WHITE);
-			}
-
-
-			//フェードイン・アウト
-			if (titleFadeInOut > 0) {
-				Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x00000000 + titleFadeInOut, kFillModeSolid);
-			}
-                scene = PLAY;
+            //タイトルロゴ
+            if (titleTimer > 150) {
+                Novice::DrawSpriteRect(0, 0, titleLogoCutX, 0, 1280, 720, titleLogoGraph, 1.0f / 4.0f, 1.0f, 0.0f, WHITE);
             }
+
+
+            //フェードイン・アウト
+            if (titleFadeInOut > 0) {
+                Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x00000000 + titleFadeInOut, kFillModeSolid);
+            }
+
+            Novice::ScreenPrintf(0, 30, "%d", gameIsStart);
+
+#pragma endregion
             break;
+
         case PLAY:
+
+            titleFadeInOut--;
+            if (titleFadeInOut <= 0) {
+                titleFadeInOut = 0;
+                isInput = true;
+            }
 
 #pragma region シェイク
 
@@ -484,7 +490,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     enemies[16].pos = circleEnemy({ 990.0f, 220.0f }, 140.0f, enemies[16].theta, -moveSlow);
                     enemies[17].pos = circleEnemy({ 990.0f, 500.0f }, 140.0f, enemies[17].theta, moveSlow);
                     enemies[18].pos = circleEnemy({ 990.0f, 500.0f }, 140.0f, enemies[18].theta, -moveSlow);
-
 
                     ///ステージ2
                     enemies[19].pos = circleEnemy({ stage2pos + 430.0f, 360.0f }, 160.0f, enemies[19].theta, moveNormal);
@@ -1058,6 +1063,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                 }
             }
 
+            if (titleFadeInOut > 0) {
+                Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x00000000 + titleFadeInOut, kFillModeSolid);
+            }
+
             //*********************:ホワイト
             Novice::DrawBox(0, 0, 1280, 720, 0.0f, GetColor(255, 255, 255, whiteOutAlpha), kFillModeSolid);
 
@@ -1070,11 +1079,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             break;
         }
 
-		Novice::ScreenPrintf(0, 0, "scene = %d", scene);
-		Novice::ScreenPrintf(40, 40, "fuck");
-		
-		/// ↑描画処理ここまで
-		///
+        /// ↑描画処理ここまで
+        ///
 
         // フレームの終了
         Novice::EndFrame();
