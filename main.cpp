@@ -246,7 +246,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma region チェックポイント
 
     //*********チェックポイント
-    const int MaxCheckPoint = 2;
+    const int MaxCheckPoint = 3;
     CheckPoint checkPoint[MaxCheckPoint];
 
     for (int i = 0; i < MaxCheckPoint; i++) {
@@ -259,6 +259,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     }
     checkPoint[0].pos = { 1430.0f,720.0f / 2.0f };
     checkPoint[1].pos = { 2550.0f,720.0f / 2.0f };
+    checkPoint[2].pos = { 3860.0f,720.0f / 2.0f };
 
     Vector2 clearLine = { 1280.0f * 5.0f , 0.0f };
     int clearLineTh = Novice::LoadTexture("./Resources/PlayScene/goalLighting.png");
@@ -649,6 +650,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
                     enemiesBig[28].pos = verticalEnemy({ stage5pos + 250.0f, 220.0f }, 300.0f, enemiesBig[28].theta, moveSlow); /// wall 3
                     enemiesBig[29].pos = verticalEnemy({ stage5pos + 250.0f, 220.0f }, 300.0f, enemiesBig[29].theta, -moveSlow); /// wall 3
+                    enemiesBig[51].pos = verticalEnemy({ stage5pos + 250.0f, 220.0f }, 300.0f, enemiesBig[51].theta, -moveFast); /// wall 3
+                    enemiesBig[52].pos = verticalEnemy({ stage5pos + 250.0f, 220.0f }, 300.0f, enemiesBig[52].theta, -moveNormal); /// wall 3
+                    enemiesBig[53].pos = verticalEnemy({ stage5pos + 250.0f, 220.0f }, 300.0f, enemiesBig[53].theta, moveFast); /// wall 3
+                    enemiesBig[54].pos = verticalEnemy({ stage5pos + 250.0f, 220.0f }, 300.0f, enemiesBig[54].theta, moveNormal); /// wall 3
 
 
 
@@ -702,6 +707,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     enemiesBig[43].pos = horizonEnemy({ stage4pos + 1090.0f, 480.0f }, 200.0f, enemiesBig[43].theta, -moveNormal); /// wall 3
                     enemiesBig[44].pos = horizonEnemy({ stage4pos + 1090.0f, 480.0f }, 100.0f, enemiesBig[44].theta, moveNormal); /// wall 3
                     enemiesBig[45].pos = horizonEnemy({ stage4pos + 1090.0f, 480.0f }, 100.0f, enemiesBig[45].theta, -moveSlow); /// wall 3
+
+                    enemiesBig[55].pos = horizonEnemy({ stage4pos + 1390.0f, 480.0f }, 100.0f, enemiesBig[55].theta, moveSlow); /// wall 3
+                    enemiesBig[56].pos = horizonEnemy({ stage4pos + 1390.0f, 480.0f }, 100.0f, enemiesBig[56].theta, moveNormal); /// wall 3
+                    enemiesBig[57].pos = horizonEnemy({ stage4pos + 1390.0f, 480.0f }, 100.0f, enemiesBig[57].theta, moveFast); /// wall 3
 
 
                     /// ステージ３
@@ -898,7 +907,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             for (int i = 0; i < MaxCheckPoint; i++) {
                 if (player.pos.x >= checkPoint[i].pos.x && !checkPoint[i].isAction) {
 
-                    player.checkPointPos.x = checkPoint[i].pos.x;
+                    player.checkPointPos = checkPoint[i].pos;
                     checkPoint[i].isAction = true;
                 }
 
