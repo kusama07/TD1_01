@@ -192,7 +192,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     int stage2pos = 1280;
     int stage3pos = 2560;
     int stage4pos = 3840;
-    int stage5pos = 3840;
+    int stage5pos = 5120;
     float moveFast = 15;
     float moveNormal = 25;
     float moveSlow = 50;
@@ -260,7 +260,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     checkPoint[0].pos = { 1430.0f,720.0f / 2.0f };
     checkPoint[1].pos = { 2550.0f,720.0f / 2.0f };
 
-    Vector2 clearLine = { 1280.0f * 4.0f , 0.0f };
+    Vector2 clearLine = { 1280.0f * 5.0f , 0.0f };
     int clearLineTh = Novice::LoadTexture("./Resources/PlayScene/goalLighting.png");
 
 #pragma endregion
@@ -342,7 +342,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     frontmostBg[0].th = Novice::LoadTexture("./Resources/PlayScene/background3_1.png");
     frontmostBg[1].th = Novice::LoadTexture("./Resources/PlayScene/background3_2.png");
     frontmostBg[2].th = Novice::LoadTexture("./Resources/PlayScene/background3_3.png");
-    frontmostBg[3].th = Novice::LoadTexture("./Resources/PlayScene/background3_2.png");
+    frontmostBg[3].th = Novice::LoadTexture("./Resources/PlayScene/background3_1.png");
 
     int playSceneBlackOut = 255;
     
@@ -604,6 +604,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     enemies[53].pos = circleEnemy({ stage5pos + 840.0f , 360.0f }, 400.0f, enemies[53].theta, -moveSlow);
                     enemies[54].pos = circleEnemy({ stage5pos + 840.0f , 360.0f }, 450.0f, enemies[54].theta, moveSlow);
                     enemies[55].pos = circleEnemy({ stage5pos + 840.0f , 360.0f }, 500.0f, enemies[55].theta, -moveNormal); ///outer*/
+                    enemies[63].pos = circleEnemy({ stage5pos + 840.0f , 360.0f }, 400.0f, enemies[63].theta, moveFast); ///outer*/
 
                 } else if (enemies[i].enemyType == 1) {
                     // 縦方向に往復する敵
@@ -680,9 +681,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     enemies[14].pos = horizonEnemy({ 1120.0f,1280.0f }, 300.0f, enemies[14].theta, moveSlow);*/
                     ///stage 4
                     enemiesBig[30].pos = horizonEnemy({ stage4pos + 250.0f, 480.0f }, 250.0f, enemiesBig[30].theta, moveNormal); /// wall 3
-                    enemiesBig[31].pos = horizonEnemy({ stage4pos + 250.0f, 480.0f }, 250.0f, enemiesBig[31].theta, -moveNormal); /// wall 3
-                    enemiesBig[32].pos = horizonEnemy({ stage4pos + 250.0f, 480.0f }, 100.0f, enemiesBig[32].theta, moveNormal); /// wall 3
+                    enemiesBig[31].pos = horizonEnemy({ stage4pos + 250.0f, 480.0f }, 250.0f, enemiesBig[31].theta, -moveFast); /// wall 3
+                    enemiesBig[32].pos = horizonEnemy({ stage4pos + 250.0f, 480.0f }, 100.0f, enemiesBig[32].theta, moveSlow); /// wall 3
                     enemiesBig[33].pos = horizonEnemy({ stage4pos + 250.0f, 480.0f }, 100.0f, enemiesBig[33].theta, -moveNormal); /// wall 3
+                    enemiesBig[48].pos = horizonEnemy({ stage4pos + 250.0f, 480.0f }, 100.0f, enemiesBig[48].theta, -moveSlow); /// wall 3
+                    enemiesBig[49].pos = horizonEnemy({ stage4pos + 250.0f, 480.0f }, 100.0f, enemiesBig[49].theta, moveSlow); /// wall 3
+
+                    enemiesBig[46].pos = horizonEnemy({ stage4pos + 150.0f, 590.0f }, 250.0f, enemiesBig[46].theta, -moveSlow); /// wall 3
+                    enemiesBig[47].pos = horizonEnemy({ stage4pos + 150.0f, 700.0f }, 250.0f, enemiesBig[47].theta, moveNormal); /// wall 3
+                    enemiesBig[50].pos = horizonEnemy({ stage4pos + 150.0f, 700.0f }, 250.0f, enemiesBig[50].theta, -moveFast); /// wall 3
 
                     enemiesBig[34].pos = horizonEnemy({ stage4pos + 830.0f, 220.0f }, 400.0f, enemiesBig[34].theta, moveNormal); /// wall 3
                     enemiesBig[35].pos = horizonEnemy({ stage4pos + 830.0f, 220.0f }, 400.0f, enemiesBig[35].theta, -moveNormal); /// wall 3
@@ -710,46 +717,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     enemies[41].pos = horizonEnemy({ stage3pos + 1120.0f, 540.0f }, 150.0f, enemies[41].theta, moveFast); /// right one 3*/
 
 
-                }
-            }
-
-            for (int i = 0; i < maxEnemy; i++) {
-                enemies[i].animeCount--;
-
-                if (enemies[i].animeCount <= 0) {
-                    enemies[i].animeCount = 60;
-
-                } else if (enemies[i].animeCount <= 10) {
-                    enemies[i].screenPosX = 0;
-                } else if (enemies[i].animeCount <= 20) {
-                    enemies[i].screenPosX = 120;
-                } else if (enemies[i].animeCount <= 40) {
-                    enemies[i].screenPosX = 240;
-                } else if (enemies[i].animeCount <= 60) {
-                    enemies[i].screenPosX = 360;
-                }
-            }
-
-            for (int i = 0; i < maxEnemy; i++) {
-                enemiesBig[i].animeCount--;
-
-                if (enemiesBig[i].animeCount <= 0) {
-
-                    enemiesBig[i].animeCount = 40;
-                    enemiesBig[i].screenPosX = 0;
-
-                } else if (enemiesBig[i].animeCount <= 10) {
-
-                    enemiesBig[i].screenPosX = 0;
-                } else if (enemiesBig[i].animeCount <= 20) {
-
-                    enemiesBig[i].screenPosX = 200;
-                } else if (enemiesBig[i].animeCount <= 30) {
-
-                    enemiesBig[i].screenPosX = 400;
-                } else if (enemiesBig[i].animeCount <= 40) {
-
-                    enemiesBig[i].screenPosX = 600;
                 }
             }
 
