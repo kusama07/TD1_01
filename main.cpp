@@ -34,6 +34,7 @@ struct Particle {
     float baseAngle;
     float randomAngle;
     float speed;
+    float randomAngle1;
 };
 
 struct Enemy {
@@ -152,7 +153,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         CLEAR,
         END
 
-    }scene = PLAY;
+    }scene = START;
 
 #pragma endregion
 
@@ -271,6 +272,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         particles[i].lifeTime = 0;
         particles[i].baseAngle = 0.0f;
         particles[i].randomAngle = 0.0f;
+        particles[i].randomAngle1 = 0.0f;
     }
     const int particlesToGenerate = 5; // 生成するパーティクルの数
 
@@ -577,9 +579,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             playSceneBlackOut--;
             if (playSceneBlackOut <= 0) {
                 playSceneBlackOut = 0;
-                if (playSceneBlackOut <= 133) {
-                    isInput = true;
-                }
+            }
+            
+            if (playSceneBlackOut <= 140) {
+                isInput = true;
             }
 
 #pragma region シェイク
@@ -948,8 +951,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
                 // プレイヤーが生きている場合のダッシュ処理
                 if (player.isAlive) {
+                    // 有効な入力があるかを確認
+                    bool isValidDirection = (keyMagnitude > 0.0f || stickMagnitude > 8000);
+
                     // キーボードのスペースキーまたはゲームパッドのボタンでダッシュ
-                    if ((keys[DIK_SPACE] && preKeys[DIK_SPACE] == 0) || Novice::IsTriggerButton(0, kPadButton10)) {
+                    if (isValidDirection && ((keys[DIK_SPACE] && preKeys[DIK_SPACE] == 0) || Novice::IsTriggerButton(0, kPadButton10))) {
                         // ダッシュ音を再生
                         Novice::PlayAudio(dashSound, false, 0.7f);
 
@@ -967,6 +973,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                                 if (!particles[i].isActive) {
                                     particles[i].pos = player.pos;
 
+                                    particles[i].randomAngle1 = ((rand() % 360) * (float)M_PI / 180.0f);
+                                    
                                     particles[i].baseAngle = atan2f(player.targetPos.y - player.pos.y, player.targetPos.x - player.pos.x) + ((float)M_PI);
 
                                     particles[i].randomAngle = particles[i].baseAngle + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
@@ -1194,6 +1202,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                             if (!particles[l].isActive) {
                                 particles[l].pos = player.pos;
 
+                                particles[i].randomAngle1 = ((rand() % 360) * (float)M_PI / 180.0f);
+
                                 particles[l].randomAngle = (rand() % 10 - 1) + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
 
                                 particles[l].speed = 5.0f + (rand() % 5);
@@ -1338,7 +1348,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                 if (particles[i].isActive) {
                    
 
-                    Novice::DrawSprite((int)particles[i].pos.x - (int)particles[i].radius - (int)camera.pos.x, (int)particles[i].pos.y - (int)particles[i].radius - (int)camera.pos.y, particlesTh, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF);
+                    Novice::DrawSprite((int)particles[i].pos.x - (int)particles[i].radius - (int)camera.pos.x, (int)particles[i].pos.y - (int)particles[i].radius - (int)camera.pos.y, particlesTh, 1.0f, 1.0f, particles[i].randomAngle1, 0xFFFFFFFF);
                 }
             }
 
