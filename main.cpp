@@ -192,7 +192,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     int stage2pos = 1280;
     int stage3pos = 2560;
     int stage4pos = 3840;
-    float moveFast = 10;
+    int stage5pos = 3840;
+    float moveFast = 15;
     float moveNormal = 25;
     float moveSlow = 50;
 
