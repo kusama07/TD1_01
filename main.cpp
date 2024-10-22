@@ -687,6 +687,46 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                 }
             }
 
+            for (int i = 0; i < maxEnemy; i++) {
+                enemies[i].animeCount--;
+
+                if (enemies[i].animeCount <= 0) {
+                    enemies[i].animeCount = 60;
+
+                } else if (enemies[i].animeCount <= 10) {
+                    enemies[i].screenPosX = 0;
+                } else if (enemies[i].animeCount <= 20) {
+                    enemies[i].screenPosX = 120;
+                } else if (enemies[i].animeCount <= 40) {
+                    enemies[i].screenPosX = 240;
+                } else if (enemies[i].animeCount <= 60) {
+                    enemies[i].screenPosX = 360;
+                }
+            }
+
+            for (int i = 0; i < maxEnemy; i++) {
+                enemiesBig[i].animeCount--;
+
+                if (enemiesBig[i].animeCount <= 0) {
+
+                    enemiesBig[i].animeCount = 40;
+                    enemiesBig[i].screenPosX = 0;
+
+                } else if (enemiesBig[i].animeCount <= 10) {
+
+                    enemiesBig[i].screenPosX = 0;
+                } else if (enemiesBig[i].animeCount <= 20) {
+
+                    enemiesBig[i].screenPosX = 200;
+                } else if (enemiesBig[i].animeCount <= 30) {
+
+                    enemiesBig[i].screenPosX = 400;
+                } else if (enemiesBig[i].animeCount <= 40) {
+
+                    enemiesBig[i].screenPosX = 600;
+                }
+            }
+
 
 #pragma endregion
 
