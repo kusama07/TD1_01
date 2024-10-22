@@ -164,7 +164,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     Enemy enemies[maxEnemy];
 
     for (int i = 0; i < maxEnemy; i++) {
-        enemies[i].pos = { 800.0f, 360.0f };
+        enemies[i].pos = { -100.0f, 0.0f };
         enemies[i].enemyType = i % 3;
         enemies[i].theta = 0;
         enemies[i].amplitude = 150.0f;
@@ -176,7 +176,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     Enemy enemiesBig[maxEnemy];
 
     for (int i = 0; i < maxEnemy; i++) {
-        enemiesBig[i].pos = { 800.0f, 360.0f };
+        enemiesBig[i].pos = { -100.0f, 0.0f };
         enemiesBig[i].enemyType = i % 3;
         enemiesBig[i].theta = 0;
         enemiesBig[i].amplitude = 150.0f;
@@ -404,7 +404,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     int gameBGM = Novice::LoadAudio("./Resources/Sound/game.mp3");
     int damageSound = Novice::LoadAudio("./Resources/Sound/damage.mp3");
     int dashSound = Novice::LoadAudio("./Resources/Sound/dash.mp3");
-    //int chackPointSound = Novice::LoadAudio("./Resources/Sound/chackPoint.mp3");
+    int chackPointSound = Novice::LoadAudio("./Resources/Sound/chackPoint.mp3");
     int startSound = Novice::LoadAudio("./Resources/Sound/start.mp3");
     int gameClearSound = Novice::LoadAudio("./Resources/Sound/gameClear.mp3");
     int clearBGM = Novice::LoadAudio("./Resources/Sound/clear.mp3");
@@ -601,7 +601,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma region 敵
 
             for (int i = 0; i < maxEnemy; i++) {
-                //enemies[i].theta += float(M_PI) / 60.0f;
                 if (enemies[i].enemyType == 0) {
                     // 円状に動く敵
                     /// ステージ 1
@@ -613,9 +612,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
                     enemies[60].pos = circleEnemy({ 1000.0f , 360.0f }, 250.0f, enemies[60].theta, -moveSlow); ///top
                     enemies[61].pos = circleEnemy({ 1000.0f , 360.0f }, 250.0f, enemies[61].theta, moveSlow); ///top
-                    //enemies[63].pos = circleEnemy({ 140.0f , 0.0f }, 250.0f, enemies[63].theta, moveSlow); ///top
-                    //enemies[60].pos = circleEnemy({ 140.0f , 720.0f }, 250.0f, enemies[60].theta, -moveSlow); ///bottom
-                    //enemies[61].pos = circleEnemy({ 140.0f , 720.0f }, 250.0f, enemies[61].theta, moveSlow); ///bottom
 
                     /// ステージ 2
                     enemies[1].pos = circleEnemy({ stage2pos + 150.0f, 100.0f }, 140.0f, enemies[1].theta, -moveNormal);
@@ -650,8 +646,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     enemies[21].pos = circleEnemy({ stage3pos + 710.0f, 80.0f }, 160.0f, enemies[21].theta, moveNormal);
                     enemies[22].pos = circleEnemy({ stage3pos + 710.0f, 360.0f }, 160.0f, enemies[22].theta, -moveNormal);
                     enemies[23].pos = circleEnemy({ stage3pos + 710.0f, 640.0f }, 160.0f, enemies[23].theta, moveNormal);
-                    //enemies[24].pos = circleEnemy({ stage3pos + 990.0f, 640.0f }, 160.0f, enemies[24].theta, -moveNormal);
-                    //enemies[25].pos = circleEnemy({ stage3pos + 990.0f, 360.0f }, 160.0f, enemies[25].theta, moveNormal);
 
                     enemies[26].pos = circleEnemy({ stage3pos + 300.0f, 640.0f }, 160.0f, enemies[26].theta, moveNormal);
                     enemies[27].pos = circleEnemy({ stage3pos + 150.0f, 80.0f }, 160.0f, enemies[27].theta, moveNormal);
@@ -678,43 +672,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     enemies[36].pos = circleEnemy({ stage4pos + 830.0f, 360.0f }, 140.0f, enemies[36].theta, moveSlow);
                     enemies[37].pos = circleEnemy({ stage4pos + 550.0f, 360.0f }, 140.0f, enemies[37].theta, -moveNormal);
                     enemies[38].pos = circleEnemy({ stage4pos + 550.0f, 640.0f }, 140.0f, enemies[38].theta, moveSlow);
-                    //enemies[39].pos = circleEnemy({ stage4pos + 830.0f, 640.0f }, 140.0f, enemies[39].theta, -moveNormal);
                     enemies[40].pos = circleEnemy({ stage4pos + 1100.0f, 640.0f }, 140.0f, enemies[40].theta, moveSlow);
-                    //enemies[41].pos = circleEnemy({ stage4pos + 1390.0f, 640.0f }, 140.0f, enemies[41].theta, -moveNormal);
 
-                    //enemies[42].pos = circleEnemy({ stage4pos + 690.0f, 500.0f }, 280.0f, enemies[42].theta, moveSlow); /// the big circular
-                    //enemies[43].pos = circleEnemy({ stage4pos + 970.0f, 500.0f }, 280.0f, enemies[43].theta, -moveSlow); /// the big circular
-                    //enemies[44].pos = circleEnemy({ stage4pos + 1250.0f, 500.0f }, 280.0f, enemies[44].theta, moveSlow); /// the big circular
-                    //enemies[45].pos = circleEnemy({ stage3pos + 1530.0f, 500.0f }, 280.0f, enemies[45].theta, -moveSlow); /// the big circular
-
-                    //enemies[46].pos = circleEnemy({ stage3pos + 690.0f, 780.0f }, 280.0f, enemies[46].theta, -moveSlow); /// the big circular
-                    //enemies[47].pos = circleEnemy({ stage4pos + 970.0f, 780.0f }, 280.0f, enemies[47].theta, -moveSlow); /// the big circular
                     enemies[48].pos = circleEnemy({ stage4pos + 1250.0f, 780.0f }, 280.0f, enemies[48].theta, moveSlow); /// the big circular
-                    //enemies[49].pos = circleEnemy({ stage4pos + 1530.0f, 780.0f }, 280.0f, enemies[49].theta, -moveSlow); /// the big circular
 
-
-                    /*enemies[32].pos = circleEnemy({ 960.0f, 0.0f }, 150.0f, enemies[32].theta, moveNormal);
-                    enemies[33].pos = circleEnemy({ 150.0f, 360.0f }, 150.0f, enemies[33].theta, moveNormal);
-                    enemies[34].pos = circleEnemy({ 480.0f, 540.0f }, 150.0f, enemies[34].theta, moveNormal);
-                    enemies[35].pos = circleEnemy({ 800.0f, 540.0f }, 150.0f, enemies[35].theta, moveNormal);
-                    enemies[36].pos = circleEnemy({ 960.0f, 360.0f }, 150.0f, enemies[36].theta, moveNormal);*/
                     ///ステージ 5
                     enemies[50].pos = circleEnemy({ stage5pos + 840.0f , 360.0f }, 120.0f, enemies[50].theta, moveSlow); ///inner
                     enemies[51].pos = circleEnemy({ stage5pos + 840.0f , 360.0f }, 200.0f, enemies[51].theta, -moveSlow);
                     enemies[52].pos = circleEnemy({ stage5pos + 840.0f , 360.0f }, 280.0f, enemies[52].theta, moveSlow);
-                    //enemies[53].pos = circleEnemy({ stage4pos + 840.0f , 360.0f }, 300.0f, enemies[53].theta, -moveNormal);
-                    //enemies[54].pos = circleEnemy({ stage4pos + 840.0f , 360.0f }, 350.0f, enemies[54].theta, moveNormal);
                     enemies[53].pos = circleEnemy({ stage5pos + 840.0f , 360.0f }, 360.0f, enemies[53].theta, -moveSlow);
                     enemies[54].pos = circleEnemy({ stage5pos + 840.0f , 360.0f }, 420.0f, enemies[54].theta, moveSlow);
                     enemies[55].pos = circleEnemy({ stage5pos + 840.0f , 360.0f }, 580.0f, enemies[55].theta, -moveSlow); ///outer*/
                     enemies[63].pos = circleEnemy({ stage5pos + 840.0f , 360.0f }, 580.0f, enemies[63].theta, moveSlow); ///outer*/
-
-                    //enemies[78].pos = circleEnemy({ stage5pos + 640.0f , 360.0f }, 400.0f, enemies[78].theta, moveSlow); ///outer*/
-                    //enemies[79].pos = circleEnemy({ stage5pos + 640.0f , 360.0f }, 400.0f, enemies[79].theta, moveSlow); ///outer*/
-                    //enemies[80].pos = circleEnemy({ stage5pos + 640.0f , 360.0f }, 400.0f, enemies[80].theta, moveSlow); ///outer*/
-                    //enemies[81].pos = circleEnemy({ stage5pos + 640.0f , 360.0f }, 400.0f, enemies[81].theta, moveSlow); ///outer*/
-                    //enemies[82].pos = circleEnemy({ stage5pos + 640.0f , 360.0f }, 400.0f, enemies[82].theta, moveSlow); ///outer*/
-
 
                 } else if (enemies[i].enemyType == 1) {
                     // 縦方向に往復する敵
@@ -727,7 +696,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     enemies[68].pos = verticalEnemy({ 620.0f, 360.0f }, 300.0f, enemies[68].theta, moveSlow); /// theta test
 
                     enemies[69].pos = verticalEnemy({ 700.0f, 360.0f }, 300.0f, enemies[69].theta, moveSlow); /// theta test
-                    //enemies[63].pos = verticalEnemy({ 300.0f, 360.0f }, 200.0f, enemiesBig[63].theta, -moveSlow); /// wall 3
 
                     /// ステージ 3
                     enemiesBig[1].pos = verticalEnemy({ stage3pos + 330.0f, 370.0f }, 100.0f, enemiesBig[1].theta, moveSlow); /// wall
@@ -773,40 +741,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     enemies[87].pos = verticalEnemy({ stage5pos + 900.0f, 360.0f }, 900.0f, enemies[87].theta, moveSlow); /// wall 3
                     enemies[88].pos = verticalEnemy({ stage5pos + 980.0f, 360.0f }, 900.0f, enemies[88].theta, moveSlow); /// wall 3
 
-
-
-
-                    /// ステージ ３
-                    /*enemies[21].pos = verticalEnemy({stage3pos + 160.0f, 180.0f}, 150.0f, enemies[21].theta, moveNormal);
-                    enemies[22].pos = verticalEnemy({ stage3pos + 640.0f, 180.0f }, 150.0f, enemies[22].theta, moveNormal);
-                    enemies[23].pos = verticalEnemy({ stage3pos + 800.0f, 180.0f }, 150.0f, enemies[23].theta, moveNormal);
-                    enemies[24].pos = verticalEnemy({ stage3pos + 960.0f, 180.0f }, 150.0f, enemies[24].theta, moveNormal); ///up
-                    enemies[25].pos = verticalEnemy({ stage3pos + 80.0f, 360.0f }, 150.0f, enemies[25].theta, moveNormal);
-                    enemies[26].pos = verticalEnemy({ stage3pos + 80.0f, 630.0f }, 100.0f, enemies[26].theta, moveNormal);
-                    enemies[27].pos = verticalEnemy({ stage3pos + 160.0f, 540.0f }, 150.0f, enemies[27].theta, moveNormal); ///down
-                    enemies[28].pos = verticalEnemy({ stage3pos + 320.0f, 540.0f }, 150.0f, enemies[28].theta, moveNormal);
-                    enemies[29].pos = verticalEnemy({ stage3pos + 480.0f, 540.0f }, 150.0f, enemies[29].theta, moveNormal);
-                    enemies[30].pos = verticalEnemy({ stage3pos + 640.0f, 540.0f }, 150.0f, enemies[30].theta, moveNormal);
-                    enemies[31].pos = verticalEnemy({ stage3pos + 800.0f, 540.0f }, 150.0f, enemies[31].theta, moveNormal);
-                    enemies[32].pos = verticalEnemy({ stage3pos + 880.0f, 400.0f }, 150.0f, enemies[32].theta, moveNormal);
-                    enemies[33].pos = verticalEnemy({ stage3pos + 960.0f, 400.0f }, 150.0f, enemies[33].theta, moveNormal);*/
-
                 } else if (enemies[i].enemyType == 2) {
                     // 横方向に往復する敵
-                    /// ステージ １
-                    /*enemies[9].pos = horizonEnemy({ 160.0f,0.0f }, 150.0f, enemies[9].theta, moveSlow);
-                    enemies[10].pos = horizonEnemy({ 1120.0f,0.0f }, 150.0f, enemies[10].theta, moveSlow);
-                    enemies[11].pos = horizonEnemy({ 960.0f,160.0f }, 300.0f, enemies[11].theta, moveSlow);
-                    enemies[12].pos = horizonEnemy({ 960.0f,540.0f }, 300.0f, enemies[12].theta, moveSlow);
-                    enemies[13].pos = horizonEnemy({ 160.0f,1280.0f }, 300.0f, enemies[13].theta, moveSlow);
-                    enemies[14].pos = horizonEnemy({ 1120.0f,1280.0f }, 300.0f, enemies[14].theta, moveSlow);*/
                     /// ステージ 4
                     enemiesBig[30].pos = horizonEnemy({ stage4pos + 150.0f, 480.0f }, 250.0f, enemiesBig[30].theta, moveSlow); /// wall 3
                     enemiesBig[31].pos = horizonEnemy({ stage4pos + 150.0f, 480.0f }, 250.0f, enemiesBig[31].theta, moveSlow); /// wall 3
                     enemiesBig[32].pos = horizonEnemy({ stage4pos + 150.0f, 480.0f }, 250.0f, enemiesBig[32].theta, moveSlow); /// wall 3
                     enemiesBig[33].pos = horizonEnemy({ stage4pos + 150.0f, 480.0f }, 250.0f, enemiesBig[33].theta, moveSlow); /// wall 3
                     enemiesBig[48].pos = horizonEnemy({ stage4pos + 150.0f, 480.0f }, 250.0f, enemiesBig[48].theta, moveSlow); /// wall 3
-                    //enemiesBig[49].pos = horizonEnemy({ stage4pos + 150.0f, 480.0f }, 250.0f, enemiesBig[49].theta, moveSlow); /// wall 3
 
                     enemiesBig[46].pos = horizonEnemy({ stage4pos + 150.0f, 590.0f }, 250.0f, enemiesBig[46].theta, moveNormal); /// wall 3
                     enemiesBig[47].pos = horizonEnemy({ stage4pos + 150.0f, 590.0f }, 250.0f, enemiesBig[47].theta, moveNormal); /// wall 3
@@ -837,19 +779,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     enemiesBig[55].pos = horizonEnemy({ stage4pos + 1390.0f, 480.0f }, 100.0f, enemiesBig[55].theta, moveSlow); /// wall 3
                     enemiesBig[56].pos = horizonEnemy({ stage4pos + 1390.0f, 480.0f }, 100.0f, enemiesBig[56].theta, moveNormal); /// wall 3
                     enemiesBig[57].pos = horizonEnemy({ stage4pos + 1390.0f, 480.0f }, 100.0f, enemiesBig[57].theta, moveFast); /// wall 3
-
-
-                    /// ステージ ３
-                    /*enemies[34].pos = horizonEnemy({ stage3pos + 480.0f, 180.0f }, 500.0f, enemies[34].theta, moveNormal); /// first purple line << add 6 more
-                    enemies[35].pos = horizonEnemy({ stage3pos + 640.0f, 270.0f }, 350.0f, enemies[35].theta, moveFast); /// second  << add 1 more
-                    enemies[36].pos = horizonEnemy({ stage3pos + 160.0f, 270.0f }, 150.0f, enemies[36].theta, moveNormal); /// second right side << add 3 more
-                    enemies[37].pos = horizonEnemy({ stage3pos + 480.0f, 450.0f }, 150.0f, enemies[37].theta, moveNormal); /// third line << add 6 more
-                    enemies[38].pos = horizonEnemy({ stage3pos + 480.0f, 540.0f }, 150.0f, enemies[38].theta, moveNormal); /// forth line << add 6 more
-                    enemies[39].pos = horizonEnemy({ stage3pos + 1120.0f, 180.0f }, 150.0f, enemies[39].theta, moveFast); /// right one 1
-                    enemies[40].pos = horizonEnemy({ stage3pos + 1120.0f, 360.0f }, 150.0f, enemies[40].theta, moveFast); /// right one 2
-                    enemies[41].pos = horizonEnemy({ stage3pos + 1120.0f, 540.0f }, 150.0f, enemies[41].theta, moveFast); /// right one 3*/
-
-
                 }
             }
 
@@ -1189,39 +1118,39 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region 当たり判定
 
-            //for (int i = 0; i < maxEnemy; i++) {
-            //    if (isCollision(player.pos, enemies[i].pos, player.radius, enemies[i].radius)
-            //        || isCollision(player.pos, enemiesBig[i].pos, player.radius, enemiesBig[i].radius)) {
+            for (int i = 0; i < maxEnemy; i++) {
+                if (isCollision(player.pos, enemies[i].pos, player.radius, enemies[i].radius)
+                    || isCollision(player.pos, enemiesBig[i].pos, player.radius, enemiesBig[i].radius)) {
 
-            //        player.isAlive = false;
-            //        //効果音
-            //        Novice::PlayAudio(chackPointSound, false, 0.9f);
-            //        // シェイク
-            //        randMax = 20;
+                    player.isAlive = false;
+                    //効果音
+                    Novice::PlayAudio(chackPointSound, false, 0.9f);
+                    // シェイク
+                    randMax = 20;
 
-            //        for (int j = 0; j < particlesToGenerate; ++j) {
-            //            for (int l = 0; l < maxParticles; ++l) {
-            //                if (!particles[l].isActive) {
-            //                    particles[l].pos = player.pos;
+                    for (int j = 0; j < particlesToGenerate; ++j) {
+                        for (int l = 0; l < maxParticles; ++l) {
+                            if (!particles[l].isActive) {
+                                particles[l].pos = player.pos;
 
-            //                    particles[i].randomAngle1 = ((rand() % 360) * (float)M_PI / 180.0f);
+                                particles[i].randomAngle1 = ((rand() % 360) * (float)M_PI / 180.0f);
 
-            //                    particles[l].randomAngle = (rand() % 10 - 1) + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
+                                particles[l].randomAngle = (rand() % 10 - 1) + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
 
-            //                    particles[l].speed = 5.0f + (rand() % 5);
+                                particles[l].speed = 5.0f + (rand() % 5);
 
-            //                    particles[l].velocity = { cosf(particles[l].randomAngle) * particles[l].speed, sinf(particles[l].randomAngle) * particles[l].speed };
+                                particles[l].velocity = { cosf(particles[l].randomAngle) * particles[l].speed, sinf(particles[l].randomAngle) * particles[l].speed };
 
-            //                    particles[l].radius = 5.0f;
-            //                    particles[l].lifeTime = 60;
-            //                    particles[l].isActive = true;
+                                particles[l].radius = 5.0f;
+                                particles[l].lifeTime = 60;
+                                particles[l].isActive = true;
 
-            //                    break;
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
 
 #pragma endregion
 
@@ -1536,7 +1465,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion				
 				break;
 			}
-
 			break;
 #pragma endregion
 		case END:
