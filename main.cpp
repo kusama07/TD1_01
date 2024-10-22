@@ -449,6 +449,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 					enemiesBig[28].pos = verticalEnemy({ stage5pos + 250.0f, 220.0f }, 300.0f, enemiesBig[28].theta, moveSlow); /// wall 3
 					enemiesBig[29].pos = verticalEnemy({ stage5pos + 250.0f, 220.0f }, 300.0f, enemiesBig[29].theta, -moveSlow); /// wall 3
+					enemiesBig[51].pos = verticalEnemy({ stage5pos + 250.0f, 220.0f }, 300.0f, enemiesBig[51].theta, -moveFast); /// wall 3
+					enemiesBig[52].pos = verticalEnemy({ stage5pos + 250.0f, 220.0f }, 300.0f, enemiesBig[52].theta, -moveNormal); /// wall 3
+					enemiesBig[53].pos = verticalEnemy({ stage5pos + 250.0f, 220.0f }, 300.0f, enemiesBig[53].theta, moveFast); /// wall 3
+					enemiesBig[54].pos = verticalEnemy({ stage5pos + 250.0f, 220.0f }, 300.0f, enemiesBig[54].theta, moveNormal); /// wall 3
 
 
 
@@ -503,6 +507,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					enemiesBig[43].pos = horizonEnemy({ stage4pos + 1090.0f, 480.0f }, 200.0f, enemiesBig[43].theta, -moveNormal); /// wall 3
 					enemiesBig[44].pos = horizonEnemy({ stage4pos + 1090.0f, 480.0f }, 100.0f, enemiesBig[44].theta, moveNormal); /// wall 3
 					enemiesBig[45].pos = horizonEnemy({ stage4pos + 1090.0f, 480.0f }, 100.0f, enemiesBig[45].theta, -moveSlow); /// wall 3
+					
+					enemiesBig[55].pos = horizonEnemy({ stage4pos + 1390.0f, 480.0f }, 100.0f, enemiesBig[55].theta, moveSlow); /// wall 3
+					enemiesBig[56].pos = horizonEnemy({ stage4pos + 1390.0f, 480.0f }, 100.0f, enemiesBig[56].theta, moveNormal); /// wall 3
+					enemiesBig[57].pos = horizonEnemy({ stage4pos + 1390.0f, 480.0f }, 100.0f, enemiesBig[57].theta, moveFast); /// wall 3
 
 
 					/// ステージ３
