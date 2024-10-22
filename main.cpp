@@ -224,15 +224,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma region チェックポイント
 
     //*********チェックポイント
-    CheckPoint checkPoint{
-        checkPoint.pos = {720.0f / 2.0f,720.0f / 2.0f},
-        checkPoint.th = Novice::LoadTexture("./Resources/PlayScene/checkpoint.png"),
-        checkPoint.w = 200 / 2,
-        checkPoint.h = 720 / 2,
-        checkPoint.animeCount = 45,
-        checkPoint.screenPosX = 0,
-        checkPoint.isAction = false,
-    };
+    const int MaxCheckPoint = 2;
+    CheckPoint checkPoint[MaxCheckPoint];
+
+    for (int i = 0; i < MaxCheckPoint; i++) {
+        checkPoint[i].th = Novice::LoadTexture("./Resources/PlayScene/checkpoint.png");
+        checkPoint[i].w = 200 / 2;
+        checkPoint[i].h = 720 / 2;
+        checkPoint[i].animeCount = 45;
+        checkPoint[i].screenPosX = 0;
+        checkPoint[i].isAction = false;
+    }
+    checkPoint[0].pos = { 1430.0f,720.0f / 2.0f };
+    checkPoint[1].pos = { 2550.0f,720.0f / 2.0f };
 
     Vector2 clearLine = { 1280.0f * 4.0f , 0.0f };
     int clearLineTh = Novice::LoadTexture("./Resources/PlayScene/goalLighting.png");
@@ -655,29 +659,32 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             }
 
             // *****************チェックポイント
-            if (player.pos.x >= checkPoint.pos.x) {
 
-                player.checkPointPos.x = checkPoint.pos.x;
-                checkPoint.isAction = true;
-            }
+            for (int i = 0; i < MaxCheckPoint; i++) {
+                if (player.pos.x >= checkPoint[i].pos.x) {
 
-            if (checkPoint.isAction) {
+                    player.checkPointPos.x = checkPoint[i].pos.x;
+                    checkPoint[i].isAction = true;
+                }
 
-                checkPoint.animeCount--;
+                if (checkPoint[i].isAction) {
 
-                if (checkPoint.animeCount <= 0) {
+                    checkPoint[i].animeCount--;
 
-                    checkPoint.animeCount = 0;
-                    checkPoint.screenPosX = 600;
-                } else if (checkPoint.animeCount <= 15) {
+                    if (checkPoint[i].animeCount <= 0) {
 
-                    checkPoint.screenPosX = 400;
-                } else if (checkPoint.animeCount <= 30) {
+                        checkPoint[i].animeCount = 0;
+                        checkPoint[i].screenPosX = 600;
+                    } else if (checkPoint[i].animeCount <= 15) {
 
-                    checkPoint.screenPosX = 200;
-                } else if (checkPoint.animeCount <= 45) {
+                        checkPoint[i].screenPosX = 400;
+                    } else if (checkPoint[i].animeCount <= 30) {
 
-                    checkPoint.screenPosX = 0;
+                        checkPoint[i].screenPosX = 200;
+                    } else if (checkPoint[i].animeCount <= 45) {
+
+                        checkPoint[i].screenPosX = 0;
+                    }
                 }
             }
 
@@ -692,6 +699,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                 if (whiteOutAlpha >= 255) {
 
                     whiteOutAlpha = 255;
+                    scene = CLEAR;
                 }
 
                 
@@ -867,12 +875,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
             //*********************チェックポイント
 
-            Novice::DrawQuad(
-                ((int)checkPoint.pos.x - (int)checkPoint.w) - (int)camera.pos.x, ((int)checkPoint.pos.y - (int)checkPoint.h) - (int)camera.pos.y,
-                ((int)checkPoint.pos.x + (int)checkPoint.w) - (int)camera.pos.x, ((int)checkPoint.pos.y - (int)checkPoint.h) - (int)camera.pos.y,
-                ((int)checkPoint.pos.x - (int)checkPoint.w) - (int)camera.pos.x, ((int)checkPoint.pos.y + (int)checkPoint.h) - (int)camera.pos.y,
-                ((int)checkPoint.pos.x + (int)checkPoint.w) - (int)camera.pos.x, ((int)checkPoint.pos.y + (int)checkPoint.h) - (int)camera.pos.y,
-                checkPoint.screenPosX, 0, 200, 720, checkPoint.th, 0xFFFFFFFF);
+            for (int i = 0; i < MaxCheckPoint; i++) {
+                Novice::DrawQuad(
+                    ((int)checkPoint[i].pos.x - (int)checkPoint[i].w) - (int)camera.pos.x, ((int)checkPoint[i].pos.y - (int)checkPoint[i].h) - (int)camera.pos.y,
+                    ((int)checkPoint[i].pos.x + (int)checkPoint[i].w) - (int)camera.pos.x, ((int)checkPoint[i].pos.y - (int)checkPoint[i].h) - (int)camera.pos.y,
+                    ((int)checkPoint[i].pos.x - (int)checkPoint[i].w) - (int)camera.pos.x, ((int)checkPoint[i].pos.y + (int)checkPoint[i].h) - (int)camera.pos.y,
+                    ((int)checkPoint[i].pos.x + (int)checkPoint[i].w) - (int)camera.pos.x, ((int)checkPoint[i].pos.y + (int)checkPoint[i].h) - (int)camera.pos.y,
+                    checkPoint[i].screenPosX, 0, 200, 720, checkPoint[i].th, 0xFFFFFFFF);
+            }
 
             //**************************敵
             // 敵の描画
