@@ -121,26 +121,26 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     // キー入力結果を受け取る箱
     char keys[256] = { 0 };
     char preKeys[256] = { 0 };
-//************************* 宣言 *************************//
+    //************************* 宣言 *************************//
 
 #pragma region タイトル用の変数
 
-	//画像
-	int titleBackgroundGraph = Novice::LoadTexture("./Resources/Images/titleBackground.png");
-	int titleLogoGraph = Novice::LoadTexture("./Resources/Images/titleLogo.png");
+    //画像
+    int titleBackgroundGraph = Novice::LoadTexture("./Resources/Images/titleBackground.png");
+    int titleLogoGraph = Novice::LoadTexture("./Resources/Images/titleLogo.png");
 
-	//ロゴの画像の切り取り開始位置
-	int titleLogoCutX = 1280 * 3;
+    //ロゴの画像の切り取り開始位置
+    int titleLogoCutX = 1280 * 3;
 
-	//フェードイン・アウト
-	int titleFadeInOut = 255;
-	int titleFadeTimer = 0;
+    //フェードイン・アウト
+    int titleFadeInOut = 255;
+    int titleFadeTimer = 0;
 
-	//ボタンが押されたか確認する変数
-	bool gameIsStart = false;
+    //ボタンが押されたか確認する変数
+    bool gameIsStart = false;
 
-	//タイトル画面用のタイマー
-	int titleTimer = 0;
+    //タイトル画面用のタイマー
+    int titleTimer = 0;
 
 
 #pragma endregion
@@ -152,7 +152,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         CLEAR,
         END
 
-    }scene = START;
+    }scene = PLAY;
 
 #pragma endregion
 
@@ -172,7 +172,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         enemies[i].screenPosX = 0;
     }
 
-    int screenPositions[4] = { 0, 120, 240, 360 }; 
+    int screenPositions[4] = { 0, 120, 240, 360 };
 
     Enemy enemiesBig[maxEnemy];
 
@@ -228,11 +228,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     Particle particles[maxParticles];
 
     for (int i = 0; i < maxParticles; ++i) {
-        particles[i].pos = { player.pos.x, player.pos.y };    
-        particles[i].velocity = { (rand() % 200 - 100) / 100.0f, 5.0f };  
-        particles[i].radius = 5.0f;                         
-        particles[i].isActive = false;                    
-        particles[i].lifeTime = 0;                     
+        particles[i].pos = { player.pos.x, player.pos.y };
+        particles[i].velocity = { (rand() % 200 - 100) / 100.0f, 5.0f };
+        particles[i].radius = 10.0f;
+        particles[i].isActive = false;
+        particles[i].lifeTime = 0;
         particles[i].baseAngle = 0.0f;
         particles[i].randomAngle = 0.0f;
     }
@@ -273,10 +273,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         Novice::LoadTexture("./Resources/PlayScene/cursorMidpoint.png"),
     };
 #pragma region Clear画面用の変数
-	enum ClearScene {
-		EYE,
-		ENDING
-	}clearScene = EYE;
+    enum ClearScene {
+        EYE,
+        ENDING
+    }clearScene = EYE;
 
 #pragma endregion
 
@@ -311,8 +311,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     //背景
     BackGround innermostBg[2];
 
-    innermostBg[0].pos.x = 0.0f;
-    innermostBg[1].pos.x = 1280.0f;
+    innermostBg[0].pos = { 0.0f, -20.0f };
+    innermostBg[1].pos = { 1280.0f , -20.0f };
 
     innermostBg[0].th = Novice::LoadTexture("./Resources/PlayScene/background1_1.png");
     innermostBg[1].th = Novice::LoadTexture("./Resources/PlayScene/background1_2.png");
@@ -320,8 +320,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     //
     BackGround middleBg[2];
 
-    middleBg[0].pos.x = 0.0f;
-    middleBg[1].pos.x = 1280.0f;
+    middleBg[0].pos = { 0.0f, -20.0f };
+    middleBg[1].pos = { 1280.0f , -20.0f };
 
     middleBg[0].th = Novice::LoadTexture("./Resources/PlayScene/background2_1.png");
     middleBg[1].th = Novice::LoadTexture("./Resources/PlayScene/background2_2.png");
@@ -329,14 +329,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     //
     BackGround frontmostBg[3];
 
-    frontmostBg[0].pos.x = 0.0f;
-    frontmostBg[1].pos.x = 1280.0f;
-    frontmostBg[2].pos.x = 2560.0f;
+    frontmostBg[0].pos = { 0.0f, -20.0f };
+    frontmostBg[1].pos = {1280.0f , -20.0f};
+    frontmostBg[2].pos = { 2560.0f , -20.0f };
 
     frontmostBg[0].th = Novice::LoadTexture("./Resources/PlayScene/background3_1.png");
     frontmostBg[1].th = Novice::LoadTexture("./Resources/PlayScene/background3_2.png");
     frontmostBg[2].th = Novice::LoadTexture("./Resources/PlayScene/background3_3.png");
 
+    int playSceneBlackOut = 255;
     
 	int clearTimer = 0;
 	int clearFadeInOut = 255;
@@ -462,10 +463,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
         case PLAY:
 
-            titleFadeInOut--;
-            if (titleFadeInOut <= 0) {
-                titleFadeInOut = 0;
-                isInput = true;
+            playSceneBlackOut--;
+            if (playSceneBlackOut <= 0) {
+                playSceneBlackOut = 0;
+                if (playSceneBlackOut <= 133) {
+                    isInput = true;
+                }
             }
 
 #pragma region シェイク
@@ -963,35 +966,36 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region 当たり判定
 
-            //for (int i = 0; i < maxEnemy; i++) {
-            //    if (isCollision(player.pos, enemies[i].pos, player.radius, enemies[i].radius)) {
+            for (int i = 0; i < maxEnemy; i++) {
+                if (isCollision(player.pos, enemies[i].pos, player.radius, enemies[i].radius)
+                    || isCollision(player.pos, enemiesBig[i].pos, player.radius, enemiesBig[i].radius)) {
 
-            //        player.isAlive = false;
+                    player.isAlive = false;
 
-            //        // シェイク
-            //        randMax = 40;
+                    // シェイク
+                    randMax = 20;
 
-            //        for (int j = 0; j < particlesToGenerate; ++j) {
-            //            for (int l = 0; l < maxParticles; ++l) {
-            //                if (!particles[l].isActive) {
-            //                    particles[l].pos = player.pos;
+                    for (int j = 0; j < particlesToGenerate; ++j) {
+                        for (int l = 0; l < maxParticles; ++l) {
+                            if (!particles[l].isActive) {
+                                particles[l].pos = player.pos;
 
-            //                    particles[l].randomAngle = (rand() % 10 - 1) + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
+                                particles[l].randomAngle = (rand() % 10 - 1) + ((rand() % 30 - 15) * (float)M_PI / 180.0f);
 
-            //                    particles[l].speed = 5.0f + (rand() % 5);
+                                particles[l].speed = 5.0f + (rand() % 5);
 
-            //                    particles[l].velocity = { cosf(particles[l].randomAngle) * particles[l].speed, sinf(particles[l].randomAngle) * particles[l].speed };
+                                particles[l].velocity = { cosf(particles[l].randomAngle) * particles[l].speed, sinf(particles[l].randomAngle) * particles[l].speed };
 
-            //                    particles[l].radius = 5.0f;
-            //                    particles[l].lifeTime = 60;
-            //                    particles[l].isActive = true;
+                                particles[l].radius = 5.0f;
+                                particles[l].lifeTime = 60;
+                                particles[l].isActive = true;
 
-            //                    break;
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
 
 #pragma endregion
 
@@ -1079,7 +1083,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             //*************************カーソルの描画
             if (player.isAlive && isInput) {
 
-                Novice::DrawSprite(((int)cursor.pos.x - 10) - (int)camera.pos.x, ((int)cursor.pos.y - 10) - (int)camera.pos.y,
+                Novice::DrawSprite(((int)cursor.pos.x - 20) - (int)camera.pos.x, ((int)cursor.pos.y - 20) - (int)camera.pos.y,
                     cursor.th, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF
                 );
 
@@ -1088,11 +1092,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                 Vector2 midPoint2 = Lerp(player.pos, cursor.pos, 0.66f);
 
 
-                Novice::DrawSprite(((int)midPoint1.x - 5) - (int)camera.pos.x, ((int)midPoint1.y - 5) - (int)camera.pos.y,
+                Novice::DrawSprite(((int)midPoint1.x - 10) - (int)camera.pos.x, ((int)midPoint1.y - 10) - (int)camera.pos.y,
                     cursor.midCursorTh, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF
                 );
 
-                Novice::DrawSprite(((int)midPoint2.x - 5) - (int)camera.pos.x, ((int)midPoint2.y - 5) - (int)camera.pos.y,
+                Novice::DrawSprite(((int)midPoint2.x - 10) - (int)camera.pos.x, ((int)midPoint2.y - 10) - (int)camera.pos.y,
                     cursor.midCursorTh, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF
                 );
 
@@ -1122,8 +1126,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                 }
             }
 
-            if (titleFadeInOut > 0) {
-                Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x00000000 + titleFadeInOut, kFillModeSolid);
+            if (playSceneBlackOut > 0) {
+                Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0x00000000 + playSceneBlackOut, kFillModeSolid);
             }
 
             //*********************:ホワイト
