@@ -681,14 +681,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
                     leftStickY = 1;
                 }
 
-                Vector2 directiona = {
-                       (float)leftStickX,
-                       (float)leftStickY,
+                float magnitudeKey = std::sqrtf(float(leftStickX * leftStickX + leftStickY * leftStickY));
+                Vector2 directionKey = {
+                    (float)leftStickX / magnitudeKey,
+                    (float)leftStickY / magnitudeKey
                 };
 
                 // カーソルの位置を計算
-                cursor.pos.x = player.pos.x + directiona.x * dashDistance;
-                cursor.pos.y = player.pos.y + directiona.y * dashDistance;
+                cursor.pos.x = player.pos.x + directionKey.x * dashDistance;
+                cursor.pos.y = player.pos.y + directionKey.y * dashDistance;
 
                 // ダッシュ
                 if (player.isAlive) {
@@ -838,7 +839,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             // *****************チェックポイント
 
             for (int i = 0; i < MaxCheckPoint; i++) {
-                if (player.pos.x >= checkPoint[i].pos.x) {
+                if (player.pos.x >= checkPoint[i].pos.x && !checkPoint[i].isAction) {
 
                     player.checkPointPos.x = checkPoint[i].pos.x;
                     checkPoint[i].isAction = true;
@@ -1297,6 +1298,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		case END:
 			break;
 		}
+
+        Novice::ScreenPrintf(0, 0, "%.1f",cursor.pos.x);
 
         /// ↑描画処理ここまで
         ///
